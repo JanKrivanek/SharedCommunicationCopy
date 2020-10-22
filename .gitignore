@@ -1,0 +1,14 @@
+[Bb]uild/*.log
+[Bb]in/
+[Oo]bj/
+node_modules/
+.sonar/
+testBin
+/packages
+.paket/
+/paket.lock
+.vs
+.vscode
+*.suo
+*.user
+*.nupkg

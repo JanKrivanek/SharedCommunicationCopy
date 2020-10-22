@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>SolarWinds</Authors>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Description>Contracts for x-process caching and rate limiting prototype</Description>
+    <PackageTags>SolarWinds package SharedCommunication</PackageTags>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+</Project>

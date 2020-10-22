@@ -1,0 +1,10 @@
+source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget-swi/
+
+nuget Castle.Windsor ~> 3.3.0
+nuget SolarWinds.Coding.Utils ~> 1.4.0
+nuget SolarWinds.Orion.Configuration ~> 10001.7.0
+nuget SolarWinds.Copyright ~> 1.4.0
+nuget SystemWrapper.Wrappers 0.22.0.141
+nuget NUnit 2.6.3
+nuget NUnit.Runners 2.6.3
+nuget Moq 4.2.1502.0911

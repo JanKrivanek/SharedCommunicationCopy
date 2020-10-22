@@ -1,0 +1,4 @@
+source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget-swi
+
+nuget SolarWinds.Build.Orion.Core ~> 2.0
+nuget SolarWinds.Build.Orion ~> 1.0

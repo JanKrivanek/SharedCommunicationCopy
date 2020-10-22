@@ -1,0 +1,14 @@
+type file
+id SolarWinds.SharedCommunication
+version 1.0.0.0
+authors SolarWinds
+description
+    x-process caching and rate limiting prototype
+files
+    ../../bin/Release/net48/SolarWinds.SharedCommunication.dll ==> lib/net48
+    ../../bin/Release/net48/SolarWinds.SharedCommunication.pdb ==> lib/net48
+dependencies
+    Castle.Windsor ~> LOCKEDVERSION
+    SolarWinds.Coding.Utils ~> LOCKEDVERSION
+    SolarWinds.Logging ~> LOCKEDVERSION
+    SystemWrapper.Wrappers ~> LOCKEDVERSION
