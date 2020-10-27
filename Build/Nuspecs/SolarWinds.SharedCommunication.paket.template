@@ -8,7 +8,4 @@ files
     ../../bin/Release/net48/SolarWinds.SharedCommunication.dll ==> lib/net48
     ../../bin/Release/net48/SolarWinds.SharedCommunication.pdb ==> lib/net48
 dependencies
-    Castle.Windsor ~> LOCKEDVERSION
-    SolarWinds.Coding.Utils ~> LOCKEDVERSION
-    SolarWinds.Logging ~> LOCKEDVERSION
-    SystemWrapper.Wrappers ~> LOCKEDVERSION
+    Microsoft.Extensions.Logging.Abstractions ~> LOCKEDVERSION

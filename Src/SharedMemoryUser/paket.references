@@ -1,4 +1,4 @@
-Castle.Windsor
-SolarWinds.Coding.Utils
 SolarWinds.Logging
+SolarWinds.Logging.Log4Net
 SystemWrapper.Wrappers
+Castle.Windsor
