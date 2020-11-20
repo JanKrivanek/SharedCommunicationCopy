@@ -6,8 +6,6 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,10 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\SolarWinds.SharedCommunication.Contracts\SolarWinds.SharedCommunication.Contracts.csproj" />
     <ProjectReference Include="..\SolarWinds.SharedCommunication\SolarWinds.SharedCommunication.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\BuildInfo.cs" Link="Properties\BuildInfo.cs" />
-    <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\CommonAssemblyInfo.cs" Link = "Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
 </Project>

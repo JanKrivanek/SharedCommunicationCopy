@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedMemoryProvider", "Src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedMemoryUser", "Src\SharedMemoryUser\SharedMemoryUser.csproj", "{08EAE615-C299-4C22-9431-DE4A6B463567}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D64E6DCA-C180-4A90-BE76-B122A8583F1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{72460003-4E3E-48AC-B57D-0FC10D349602} = {D64E6DCA-C180-4A90-BE76-B122A8583F1D}
 		{32133981-8F3A-4BCE-867D-0F9DEBF4EF51} = {FCF0AD57-6BDD-4EF8-9573-B29B6CEE700D}
 		{08EAE615-C299-4C22-9431-DE4A6B463567} = {FCF0AD57-6BDD-4EF8-9573-B29B6CEE700D}
 	EndGlobalSection

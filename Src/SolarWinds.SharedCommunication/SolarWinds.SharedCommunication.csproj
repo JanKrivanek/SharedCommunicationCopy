@@ -1,14 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
-    <Authors>SolarWinds</Authors>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Description>x-process caching and rate limiting prototype</Description>
+    <TargetFrameworks>$(FullFrameworkVersion)</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Description>x-process caching and rate limiting prototype</Description>
     <PackageReleaseNotes>Initial prototype version</PackageReleaseNotes>
     <PackageTags>SolarWinds package SharedCommunication</PackageTags>
   </PropertyGroup>
@@ -21,11 +15,6 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\BuildInfo.cs" Link="Properties\BuildInfo.cs" />
-    <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\CommonAssemblyInfo.cs" Link = "Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

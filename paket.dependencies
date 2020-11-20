@@ -5,6 +5,9 @@ nuget SolarWinds.Coding.Utils ~> 1.4.0
 nuget SolarWinds.Orion.Configuration ~> 10001.7.0
 nuget SolarWinds.Copyright ~> 1.4.0
 nuget SystemWrapper.Wrappers 0.22.0.141
-nuget NUnit 2.6.3
-nuget NUnit.Runners 2.6.3
-nuget Moq 4.2.1502.0911
+
+# Unit test suppport
+nuget NUnit == 3.12.0
+nuget NUnit3TestAdapter = 3.12.0
+nuget NUnit.Runners == 3.9.0
+nuget dotCover ~> 2.7
