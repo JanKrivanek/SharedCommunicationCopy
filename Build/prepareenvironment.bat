@@ -1,0 +1,1 @@
+buildTrigger.bat Install-NuGetPackages

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- Common framework and output configuration -->
+  <PropertyGroup>
+    <SolutionDirectoryBuildProps>true</SolutionDirectoryBuildProps>
+    <!-- Globally shared target framework versions to apply in csproj in TargetFramework or TargetFrameworks tag -->
+    <FullFrameworkVersion>net48</FullFrameworkVersion>
+    <NetStandardVersion>netstandard2.0</NetStandardVersion>
+    <NetCoreAppVersion>netcoreapp2.1</NetCoreAppVersion>
+    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)</OutputPath>
+    <!-- Enable grouping of SpecFlow cs files under features -->
+    <SpecFlow_EnableDefaultCompileItems>true</SpecFlow_EnableDefaultCompileItems>
+    <!-- Generate XML documentation for any production project -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Always create PDBs in full mode -->
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <!-- Treat warnings as errors except obsolete (612,618) and XML doc (1591) for C# projects -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>612,618,1591</WarningsNotAsErrors>
+  </PropertyGroup>
+  <!-- Build test projects to different output folder than production projects -->
+  <PropertyGroup Condition="$(MSBuildProjectName.Contains('Tests'))">
+    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\Tests</OutputPath>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Include SolarWinds.NETStandard shared configuration -->
+  <PropertyGroup>
+    <ImportSolarWindsNetStandardBuildPropsPath>$(MSBuildThisFileDirectory)packages\SolarWinds.NETStandard\build\SolarWinds.NETStandard.Build.props</ImportSolarWindsNetStandardBuildPropsPath>
+  </PropertyGroup>
+  <Import Project="$(ImportSolarWindsNetStandardBuildPropsPath)" Condition="('$(SolarWindsNetStandardBuildProps)'=='') And(Exists('$ImportSolarWindsNetStandardBuildPropsPath'))" />
+
+  <!-- Include copyright information -->
+  <PropertyGroup>
+    <!-- We are providing those by our own means -->
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)packages\SolarWinds.Copyright\copyright\Core\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)packages\SolarWinds.Copyright\copyright\Core\BuildInfo.cs">
+      <Link>Properties\BuildInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+   <!-- Import local customization, if present -->
+  <PropertyGroup>
+    <ImportLocalBuildPropsPath>$(MSBuildThisFileDirectory)Local.Directory.Build.props</ImportLocalBuildPropsPath>
+  </PropertyGroup>
+  <Import Project="$(ImportLocalBuildPropsPath)" Condition="Exists('$ImportLocalBuildPropsPath')" />
+</Project>
