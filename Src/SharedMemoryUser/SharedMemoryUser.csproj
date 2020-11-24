@@ -19,4 +19,28 @@
     <ProjectReference Include="..\SolarWinds.SharedCommunication.Contracts\SolarWinds.SharedCommunication.Contracts.csproj" />
     <ProjectReference Include="..\SolarWinds.SharedCommunication\SolarWinds.SharedCommunication.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Logging">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Solarwinds.Logging">
+      <HintPath>..\..\packages\SolarWinds.Logging\lib\net48\Solarwinds.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="SolarWinds.Logging.Log4Net">
+      <HintPath>..\..\packages\SolarWinds.Logging.Log4Net\lib\net48\SolarWinds.Logging.Log4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\BuildInfo.cs" Link="Properties\BuildInfo.cs" />
+    <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
+  </ItemGroup>
+
 </Project>
