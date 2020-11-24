@@ -2,4 +2,3 @@ source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget-swi
 
 nuget SolarWinds.Build.Orion ~> 1.0
 nuget SolarWinds.Build.Orion.Core ~> 3.0
-nuget Paket == 5.219.1
