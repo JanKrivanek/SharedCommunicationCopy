@@ -1,5 +1,6 @@
 source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget-swi/
 
+nuget SolarWinds.Logging ~> 10000.6.0
 nuget SolarWinds.Logging.Log4Net ~> 10000.6.0
 nuget Castle.Core ~> 3.3.0
 nuget Castle.Windsor ~> 3.3.0
