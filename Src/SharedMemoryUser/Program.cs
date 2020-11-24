@@ -8,11 +8,12 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-//using Castle.MicroKernel.Registration;
-//using Castle.Windsor;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SolarWinds.Logging.Log4Net;
+using SolarWinds.Logging;
 using SolarWinds.SharedCommunication.Contracts.DataCache;
 using SolarWinds.SharedCommunication.Contracts.Utils;
 using SolarWinds.SharedCommunication.DataCache.WCF;
@@ -68,53 +69,52 @@ namespace SharedMemoryUser
             }
 
             //
-            //Logger creation with Castle.Winsdor DI context - commented so that Castle references are not required
+            //Logger creation with Castle.Winsdor DI context
             //
+            {
+                // Register everything with Castle Windsor.
+                // This should happen once, when your application starts up.
+                var container = new WindsorContainer();
 
-            //{
-            //    // Register everything with Castle Windsor.
-            //    // This should happen once, when your application starts up.
-            //    var container = new WindsorContainer();
+                // Register the logger factory.
+                container.Register(Component.For(typeof(ILoggerFactory))
+                    .UsingFactoryMethod((kernel, model, creationContext) =>
+                    {
+                        // Configure log4net, generate a provider, and add it to the factory.
+                        var logConfiguration = new Log4NetConfiguration();
+                        logConfiguration.Configure("MyApp.exe.config");
+                        var provider = logConfiguration.GetLoggerProvider();
+                        var factory = new LoggerFactory();
+                        factory.AddProvider(provider);
+                        return factory;
+                    })
+                    .LifestyleSingleton());
 
-            //    // Register the logger factory.
-            //    container.Register(Component.For(typeof(ILoggerFactory))
-            //        .UsingFactoryMethod((kernel, model, creationContext) =>
-            //        {
-            //            // Configure log4net, generate a provider, and add it to the factory.
-            //            var logConfiguration = new Log4NetConfiguration();
-            //            logConfiguration.Configure("MyApp.exe.config");
-            //            var provider = logConfiguration.GetLoggerProvider();
-            //            var factory = new LoggerFactory();
-            //            factory.AddProvider(provider);
-            //            return factory;
-            //        })
-            //        .LifestyleSingleton());
-
-            //    // Register a factory method for creating ILogger<T> from the factory.
-            //    container.Register(Component.For(typeof(ILogger<>))
-            //        .UsingFactoryMethod((kernel, model, creationContext) =>
-            //        {
-            //            ILoggerFactory loggerFactory = kernel.Resolve<ILoggerFactory>();
-            //            var classType = creationContext.GenericArguments.First();
-            //            Type loggerType = typeof(Logger<>).MakeGenericType(classType);
-            //            object logger = Activator.CreateInstance(loggerType, loggerFactory);
-            //            return logger;
-            //        })
-            //        .LifestyleSingleton());
+                // Register a factory method for creating ILogger<T> from the factory.
+                container.Register(Component.For(typeof(ILogger<>))
+                    .UsingFactoryMethod((kernel, model, creationContext) =>
+                    {
+                        ILoggerFactory loggerFactory = kernel.Resolve<ILoggerFactory>();
+                        var classType = creationContext.GenericArguments.First();
+                        Type loggerType = typeof(Logger<>).MakeGenericType(classType);
+                        object logger = Activator.CreateInstance(loggerType, loggerFactory);
+                        return logger;
+                    })
+                    .LifestyleSingleton());
 
 
-            //    // Register a class that needs a logger.
-            //    //container.Register(Component.For<IMyLibraryClass>().ImplementedBy<MyLibraryClass>());
+                // Register a class that needs a logger.
+                //container.Register(Component.For<IMyLibraryClass>().ImplementedBy<MyLibraryClass>());
 
-            //    //...
+                //...
 
-            //    // Resolve the library class that will do some logging. Invoke it.
-            //    //var libraryClass = container.Resolve<IMyLibraryClass>();
-            //    //libraryClass.DoThings();
+                // Resolve the library class that will do some logging. Invoke it.
+                //var libraryClass = container.Resolve<IMyLibraryClass>();
+                //libraryClass.DoThings();
 
-            //    var lgr = container.Resolve<ILogger<Program>>();
-            //    return lgr;
-            //}
+                var lgr = container.Resolve<ILogger<Program>>();
+                return lgr;
+            }
         }
 
         public static async Task Run()
