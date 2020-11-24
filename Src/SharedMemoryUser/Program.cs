@@ -59,6 +59,14 @@ namespace SharedMemoryUser
     {
         public static ILogger CreateLogger()
         {
+            //
+            //Logger creation if no DI context is available nor desired:
+            //
+            {
+                var logConfiguration = new Log4NetConfiguration();
+                return logConfiguration.GetLoggerProvider().CreateLogger("SdWanLogging");
+            }
+
             // Register everything with Castle Windsor.
             // This should happen once, when your application starts up.
             var container = new WindsorContainer();
