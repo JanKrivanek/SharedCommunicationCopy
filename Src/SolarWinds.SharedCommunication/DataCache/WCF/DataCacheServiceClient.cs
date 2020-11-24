@@ -8,7 +8,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
-    internal class DataCacheServiceClient<T> : IDataCache<T> //where T : ICacheEntry
+    internal class DataCacheServiceClient<T> : DelayedDisposalSharedObject<DataCacheServiceClient<T>>, IDataCache<T> //where T : ICacheEntry
     {
         private readonly PollerDataCacheClient _cacheClient = new PollerDataCacheClient();
         //TODO: this must be done differently - different types have different ttl (e.g. topology has longer polling interval)
@@ -18,7 +18,13 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         private readonly string _key;
         private readonly DataContractSerializer _serializer = new DataContractSerializer(typeof(T));
 
-        public DataCacheServiceClient(string cacheName, TimeSpan ttl, IAsyncSemaphoreFactory semaphoreFactory)
+        public static DataCacheServiceClient<T> Create(string cacheName, TimeSpan ttl,
+            IAsyncSemaphoreFactory semaphoreFactory)
+        {
+            return Acquire(cacheName, name => new DataCacheServiceClient<T>(name, ttl, semaphoreFactory));
+        }
+
+        private DataCacheServiceClient(string cacheName, TimeSpan ttl, IAsyncSemaphoreFactory semaphoreFactory)
         {
             _ttl = ttl;
             _asyncSemaphore = semaphoreFactory.Create(cacheName + "_MTX");
@@ -70,6 +76,11 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         }
 
         public void Dispose()
+        {
+            this.Release();
+        }
+
+        protected override void DisposeImpl()
         {
             _cacheClient.Close();
             _asyncSemaphore.Dispose();

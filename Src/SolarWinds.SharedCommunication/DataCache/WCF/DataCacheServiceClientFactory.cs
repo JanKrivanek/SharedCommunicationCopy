@@ -18,7 +18,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         public IDataCache<T> CreateCache(string cacheName, TimeSpan ttl)
         {
             var asyncSemaphore = _semaphoreFactory.Create(cacheName + "_MTX");
-            return new DataCacheServiceClient<T>(cacheName, ttl, _semaphoreFactory);
+            return DataCacheServiceClient<T>.Create(cacheName, ttl, _semaphoreFactory);
         }
     }
 }
