@@ -8,7 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using SolarWinds.SharedCommunication.Contracts.RateLimiter;
 using System.Security.Cryptography;
-using SolarWinds.Coding.Utils.Windows.Logger;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SolarWinds.Logging;
 using SolarWinds.SharedCommunication.Utils;
 
@@ -26,8 +27,10 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             string id = new SynchronizationIdentifiersProvider().GetSynchronizationIdentifier(apiBaseAddress, apiKey,
                 orgId);
 
+            ILogger logger = NullLogger.Instance;
+
             CrossProcessRateLimiterFactory f = new CrossProcessRateLimiterFactory(new PlatformDateTime(),
-                new KernelObjectsPrivilegesChecker(new SolarWindsLogAdapter(this.GetType())));
+                new KernelObjectsPrivilegesChecker(logger));
 
 
             int workersCount = 8;

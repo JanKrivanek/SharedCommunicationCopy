@@ -4,8 +4,8 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SolarWinds.Coding.Utils.Logger;
 using SolarWinds.SharedCommunication.Contracts.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace SolarWinds.SharedCommunication.Utils
 {
@@ -54,7 +54,7 @@ namespace SolarWinds.SharedCommunication.Utils
                 }
                 catch (UnauthorizedAccessException e)
                 {
-                    logger.Error(
+                    logger.LogError(
                         "Cannot write into Global kernel namespace. Falling back to creating and opening objects without namespace prefix (so proper communication/synchronization is limit to just single windows session). To prevent this, make sure the process is running with appropriate privileges",
                         e);
                     return false;

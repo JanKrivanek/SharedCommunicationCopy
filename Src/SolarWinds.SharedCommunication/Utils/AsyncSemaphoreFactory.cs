@@ -1,8 +1,8 @@
 ﻿using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
-using SolarWinds.Coding.Utils.Logger;
 using SolarWinds.SharedCommunication.Contracts.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace SolarWinds.SharedCommunication.Utils
 {
@@ -33,7 +33,7 @@ namespace SolarWinds.SharedCommunication.Utils
             Semaphore sp = new Semaphore(1, 1, name, out createdNew, securitySettings);
 
             string action = createdNew ? "Created new" : "Opened existing";
-            _logger.Debug($"{action} Semaphore with name {name}.");
+            _logger.LogDebug("{action} Semaphore with name {name}.", action, name);
 
             return new AsyncSemaphore(sp);
         }

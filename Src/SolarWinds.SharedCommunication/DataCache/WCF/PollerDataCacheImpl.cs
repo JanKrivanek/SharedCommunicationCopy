@@ -6,7 +6,6 @@ using System.ServiceModel.Channels;
 using System.Text;
 using SolarWinds.SharedCommunication.Contracts.DataCache;
 using SolarWinds.SharedCommunication.Contracts.Utils;
-using SolarWinds.Coding.Utils.Logger;
 
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
