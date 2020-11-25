@@ -36,7 +36,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         ///<inheritdoc/>
         public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
-            using (await _asyncSemaphore.LockAsync(token))
+            using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
             {
                 SerializedCacheEntry entry = _cacheClient.GetDataCacheEntry(_key, _ttl);
 
@@ -49,7 +49,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
                 else
                 {
                     token.ThrowIfCancellationRequested();
-                    data = await asyncDataFactory();
+                    data = await asyncDataFactory().ConfigureAwait(false);
                     entry = FromData(data);
                     _cacheClient.SetDataCacheEntry(_key, _ttl, entry);
                 }

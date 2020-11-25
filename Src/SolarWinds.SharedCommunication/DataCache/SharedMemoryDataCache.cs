@@ -42,7 +42,7 @@ namespace SolarWinds.SharedCommunication.DataCache
         public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
 
-            using (await _asyncSemaphore.LockAsync(token))
+            using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
             {
                 bool hasData = _memorySegment.LastChangedUtc >= _dateTime.UtcNow - _ttl;
                 T data;
@@ -52,7 +52,7 @@ namespace SolarWinds.SharedCommunication.DataCache
                 }
                 else
                 {
-                    data = await asyncDataFactory();
+                    data = await asyncDataFactory().ConfigureAwait(false);
                     _memorySegment.WriteData(data);
                 }
 
@@ -70,7 +70,7 @@ namespace SolarWinds.SharedCommunication.DataCache
 
         private async Task EraseDataAsync()
         {
-            using (await _asyncSemaphore.LockAsync())
+            using (await _asyncSemaphore.LockAsync().ConfigureAwait(false))
             {
                 _memorySegment.Clear();
             }
@@ -79,7 +79,7 @@ namespace SolarWinds.SharedCommunication.DataCache
         ///<inheritdoc/>
         public async Task SetData(T data, CancellationToken token = default)
         {
-            using (await _asyncSemaphore.LockAsync(token))
+            using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
             {
                 _memorySegment.WriteData(data);
             }

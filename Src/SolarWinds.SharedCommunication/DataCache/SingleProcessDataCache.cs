@@ -55,7 +55,7 @@ namespace SolarWinds.SharedCommunication.DataCache
                 bool hasData = _lastChangedUtc >= _dateTime.UtcNow - _ttl;
                 if (!hasData)
                 {
-                    _data = await asyncDataFactory();
+                    _data = await asyncDataFactory().ConfigureAwait(false);
                     _lastChangedUtc = _dateTime.UtcNow;
                 }
 
