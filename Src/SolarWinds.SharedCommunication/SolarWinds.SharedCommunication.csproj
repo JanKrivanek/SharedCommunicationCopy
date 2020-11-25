@@ -17,5 +17,14 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Logging">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Solarwinds.Logging">
+      <HintPath>..\..\packages\SolarWinds.Logging\lib\net48\Solarwinds.Logging.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
