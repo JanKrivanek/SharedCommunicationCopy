@@ -114,6 +114,12 @@ namespace SolarWinds.SharedCommunication.DataCache
 
         public void WriteData<T>(T data)
         {
+            if (data == null)
+            {
+                Clear();
+                return;
+            }
+
             var ds = new DataContractSerializer(typeof(T));
             MemoryStream ms = new MemoryStream();
             ds.WriteObject(ms, data);

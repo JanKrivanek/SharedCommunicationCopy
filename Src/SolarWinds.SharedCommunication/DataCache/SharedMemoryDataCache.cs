@@ -8,6 +8,7 @@ using SolarWinds.SharedCommunication.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache
 {
+    ///<inheritdoc/>
     public class SharedMemoryDataCache<T> : IDataCache<T> where T : ICacheEntry
     {
         //Semaphore and memory segments are named - so we are fine recreating them in a same process
@@ -37,6 +38,7 @@ namespace SolarWinds.SharedCommunication.DataCache
             _dateTime = dateTime;
         }
 
+        ///<inheritdoc/>
         public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
 
@@ -55,6 +57,31 @@ namespace SolarWinds.SharedCommunication.DataCache
                 }
 
                 return data;
+            }
+        }
+
+        ///<inheritdoc/>
+        public void EraseData()
+        {
+            //synchronisation is needed, as erasing is multistep and one of the steps is clearing the memory.
+            // parallel writers could then write to deallocated memory segment
+            EraseDataAsync().Wait();
+        }
+
+        private async Task EraseDataAsync()
+        {
+            using (await _asyncSemaphore.LockAsync())
+            {
+                _memorySegment.Clear();
+            }
+        }
+
+        ///<inheritdoc/>
+        public async Task SetData(T data, CancellationToken token = default)
+        {
+            using (await _asyncSemaphore.LockAsync(token))
+            {
+                _memorySegment.WriteData(data);
             }
         }
 

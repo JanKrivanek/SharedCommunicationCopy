@@ -51,6 +51,12 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
 
         public void SetDataCacheEntry(string entryKey, TimeSpan ttl, SerializedCacheEntry entry)
         {
+            if (entry?.SerializedData == null)
+            {
+                _cache.TryRemove(entryKey, out _);
+                return;
+            }
+
             InternalEntry ie = new InternalEntry(entry, ttl, _dateTime.UtcNow);
             _cache[entryKey] = ie;
         }
