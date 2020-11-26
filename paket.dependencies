@@ -1,11 +1,15 @@
+framework: net48
 source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget-swi/
 
+nuget SolarWinds.NETCore ~> 2.0.4
 nuget SolarWinds.Logging ~> 10000.6.0
 nuget SolarWinds.Logging.Log4Net ~> 10000.6.0
 nuget Castle.Core ~> 3.3.0
 nuget Castle.Windsor ~> 3.3.0
 nuget SolarWinds.Orion.Configuration ~> 10001.7.0
 nuget SolarWinds.Copyright ~> 1.4.0
+
+# Used only for non product test tools
 nuget SystemWrapper.Wrappers 0.22.0.141
 
 # Unit test suppport

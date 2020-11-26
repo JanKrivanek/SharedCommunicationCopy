@@ -1,13 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <OutputType>Exe</OutputType>
-    <Authors>SolarWinds</Authors>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <WarningsNotAsErrors>1998,1591,4014</WarningsNotAsErrors>
-	<OutputPath>..\..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,26 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.Extensions.Logging">
-      <HintPath>..\..\packages\Microsoft.Extensions.Logging\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Solarwinds.Logging">
-      <HintPath>..\..\packages\SolarWinds.Logging\lib\net48\Solarwinds.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="SolarWinds.Logging.Log4Net">
-      <HintPath>..\..\packages\SolarWinds.Logging.Log4Net\lib\net48\SolarWinds.Logging.Log4Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Core">
-      <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Windsor">
-      <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\BuildInfo.cs" Link="Properties\BuildInfo.cs" />
     <Compile Include="..\..\packages\SolarWinds.Copyright\copyright\Core\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
 
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

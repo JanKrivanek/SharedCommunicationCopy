@@ -7,7 +7,9 @@ description
 files
     ../../bin/Release/net48/SolarWinds.SharedCommunication.dll ==> lib/net48
     ../../bin/Release/net48/SolarWinds.SharedCommunication.pdb ==> lib/net48
+    ../../bin/Release/net48/SolarWinds.SharedCommunication.xml ==> lib/net48
     ../../bin/Release/net48/SolarWinds.SharedCommunication.Contracts.dll ==> lib/net48
     ../../bin/Release/net48/SolarWinds.SharedCommunication.Contracts.pdb ==> lib/net48
+    ../../bin/Release/net48/SolarWinds.SharedCommunication.Contracts.xml ==> lib/net48
 dependencies
     Microsoft.Extensions.Logging.Abstractions ~> LOCKEDVERSION
