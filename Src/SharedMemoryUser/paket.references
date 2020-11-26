@@ -2,3 +2,4 @@ SolarWinds.Logging
 SolarWinds.Logging.Log4Net
 SystemWrapper.Wrappers
 Castle.Windsor
+Castle.Core

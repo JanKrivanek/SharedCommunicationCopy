@@ -1,10 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(FullFrameworkVersion)</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>x-process caching and rate limiting prototype</Description>
-    <PackageReleaseNotes>Initial prototype version</PackageReleaseNotes>
-    <PackageTags>SolarWinds package SharedCommunication</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,15 +13,6 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.Extensions.Logging">
-      <HintPath>..\..\packages\Microsoft.Extensions.Logging\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Solarwinds.Logging">
-      <HintPath>..\..\packages\SolarWinds.Logging\lib\net48\Solarwinds.Logging.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

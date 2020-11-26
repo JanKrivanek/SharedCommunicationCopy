@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(FullFrameworkVersion)</TargetFrameworks>
     <Description>Contracts for x-process caching and rate limiting prototype</Description>
-    <PackageTags>SolarWinds package SharedCommunication</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
