@@ -8,6 +8,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
+    ///<inheritdoc/>
     internal class DataCacheServiceClient<T> : DelayedDisposalSharedObject<DataCacheServiceClient<T>>, IDataCache<T> //where T : ICacheEntry
     {
         private readonly PollerDataCacheClient _cacheClient = new PollerDataCacheClient();
@@ -31,11 +32,11 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             _key = cacheName;
         }
 
-        //exception handling is up to client code! - exception should be logged and null data returned to client
-        // cache will be in consistent state (just the currently worked on data might or might not be there)
-        public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
+        
+        ///<inheritdoc/>
+        public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
-            using (await _asyncSemaphore.LockAsync(token))
+            using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
             {
                 SerializedCacheEntry entry = _cacheClient.GetDataCacheEntry(_key, _ttl);
 
@@ -48,13 +49,36 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
                 else
                 {
                     token.ThrowIfCancellationRequested();
-                    data = await asyncDataFactory();
+                    data = await asyncDataFactory().ConfigureAwait(false);
                     entry = FromData(data);
                     _cacheClient.SetDataCacheEntry(_key, _ttl, entry);
                 }
 
                 return data;
             }
+        }
+
+        ///<inheritdoc/>
+        public void EraseData()
+        {
+            //no need to synchronize - the server side concurrent dict will take care about serializing access
+            _cacheClient.SetDataCacheEntry(_key, _ttl, null);
+        }
+
+        ///<inheritdoc/>
+        public Task SetDataAsync(T data, CancellationToken token = default)
+        {
+            if (data == null)
+            {
+                EraseData();
+            }
+            else
+            {
+                //no need to synchronize - the server side concurrent dict will take care about serializing access
+                _cacheClient.SetDataCacheEntry(_key, _ttl, FromData(data));
+            }
+
+            return Task.CompletedTask;
         }
 
         private T ToData(SerializedCacheEntry entry)

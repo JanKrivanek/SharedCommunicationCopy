@@ -8,6 +8,7 @@ using SolarWinds.SharedCommunication.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache
 {
+    ///<inheritdoc/>
     public class SharedMemoryDataCache<T> : IDataCache<T> where T : ICacheEntry
     {
         //Semaphore and memory segments are named - so we are fine recreating them in a same process
@@ -37,10 +38,11 @@ namespace SolarWinds.SharedCommunication.DataCache
             _dateTime = dateTime;
         }
 
-        public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
+        ///<inheritdoc/>
+        public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
 
-            using (await _asyncSemaphore.LockAsync(token))
+            using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
             {
                 bool hasData = _memorySegment.LastChangedUtc >= _dateTime.UtcNow - _ttl;
                 T data;
@@ -50,11 +52,36 @@ namespace SolarWinds.SharedCommunication.DataCache
                 }
                 else
                 {
-                    data = await asyncDataFactory();
+                    data = await asyncDataFactory().ConfigureAwait(false);
                     _memorySegment.WriteData(data);
                 }
 
                 return data;
+            }
+        }
+
+        ///<inheritdoc/>
+        public void EraseData()
+        {
+            //synchronisation is needed, as erasing is multistep and one of the steps is clearing the memory.
+            // parallel writers could then write to deallocated memory segment
+            EraseDataAsync().Wait();
+        }
+
+        private async Task EraseDataAsync()
+        {
+            using (await _asyncSemaphore.LockAsync().ConfigureAwait(false))
+            {
+                _memorySegment.Clear();
+            }
+        }
+
+        ///<inheritdoc/>
+        public async Task SetDataAsync(T data, CancellationToken token = default)
+        {
+            using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
+            {
+                _memorySegment.WriteData(data);
             }
         }
 

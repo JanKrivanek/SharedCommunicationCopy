@@ -11,6 +11,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache
 {
+    ///<inheritdoc/>
     public class SingleProcessDataCache<T> : DelayedDisposalSharedObject<SingleProcessDataCache<T>>, IDataCache<T> //where T : ICacheEntry
     {
         //SemaphoreSlim cannot be created from handle - so we need to make sure to create single
@@ -44,7 +45,8 @@ namespace SolarWinds.SharedCommunication.DataCache
             _dateTime = dateTime;
         }
 
-        public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
+        ///<inheritdoc/>
+        public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
             await _sp.WaitAsync(token);
             //on cancellation exception would be thrown and we won't get here
@@ -53,7 +55,7 @@ namespace SolarWinds.SharedCommunication.DataCache
                 bool hasData = _lastChangedUtc >= _dateTime.UtcNow - _ttl;
                 if (!hasData)
                 {
-                    _data = await asyncDataFactory();
+                    _data = await asyncDataFactory().ConfigureAwait(false);
                     _lastChangedUtc = _dateTime.UtcNow;
                 }
 
@@ -64,6 +66,27 @@ namespace SolarWinds.SharedCommunication.DataCache
                 _sp.Release();
             }
         }
+
+        ///<inheritdoc/>
+        public void EraseData()
+        {
+            _lastChangedUtc = DateTime.MinValue;
+            _data = default(T);
+        }
+
+        ///<inheritdoc/>
+        public Task SetDataAsync(T data, CancellationToken token = default)
+        {
+            //no need to synchronize - individual fields are references - no possibility of torn reads/writes of those in .NET
+            // the time flag and data writes cannot be reordered (again - thanks to .net memory model), so in a worst case
+            // we can happen to have race of 2 writes where data is from one write and timestamp from other - but since it was race,
+            // the timestamps will be very close together - so no harm in mixing two
+            _data = data;
+            _lastChangedUtc = _dateTime.UtcNow;
+
+            return Task.CompletedTask;
+        }
+
 
         public void Dispose()
         {
