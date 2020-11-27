@@ -34,7 +34,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
 
         
         ///<inheritdoc/>
-        public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
+        public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
             using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
             {
@@ -66,7 +66,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         }
 
         ///<inheritdoc/>
-        public Task SetData(T data, CancellationToken token = default)
+        public Task SetDataAsync(T data, CancellationToken token = default)
         {
             if (data == null)
             {

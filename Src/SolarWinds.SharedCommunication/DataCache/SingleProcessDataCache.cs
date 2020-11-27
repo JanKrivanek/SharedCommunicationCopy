@@ -46,7 +46,7 @@ namespace SolarWinds.SharedCommunication.DataCache
         }
 
         ///<inheritdoc/>
-        public async Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
+        public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
             await _sp.WaitAsync(token);
             //on cancellation exception would be thrown and we won't get here
@@ -75,7 +75,7 @@ namespace SolarWinds.SharedCommunication.DataCache
         }
 
         ///<inheritdoc/>
-        public Task SetData(T data, CancellationToken token = default)
+        public Task SetDataAsync(T data, CancellationToken token = default)
         {
             //no need to synchronize - individual fields are references - no possibility of torn reads/writes of those in .NET
             // the time flag and data writes cannot be reordered (again - thanks to .net memory model), so in a worst case

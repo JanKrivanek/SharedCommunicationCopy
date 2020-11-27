@@ -28,7 +28,7 @@ namespace SolarWinds.SharedCommunication.Contracts.DataCache
         /// <param name="asyncDataFactory">Factory producing the data</param>
         /// <param name="token">cancellation token</param>
         /// <returns>Either pre-existing data from cache or newly created data from asyncDataFactory</returns>
-        Task<T> GetData(Func<Task<T>> asyncDataFactory, CancellationToken token = default);
+        Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default);
 
         /// <summary>
         /// Removes the data slot from the cache
@@ -40,6 +40,6 @@ namespace SolarWinds.SharedCommunication.Contracts.DataCache
         /// </summary>
         /// <param name="data">Data to be pushed to cache</param>
         /// <param name="token">cancellation token</param>
-        Task SetData(T data, CancellationToken token = default);
+        Task SetDataAsync(T data, CancellationToken token = default);
     }
 }
