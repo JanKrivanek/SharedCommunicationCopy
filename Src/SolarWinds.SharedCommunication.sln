@@ -5,17 +5,17 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prototypes", "prototypes", "{FCF0AD57-6BDD-4EF8-9573-B29B6CEE700D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarWinds.SharedCommunication.Contracts", "Src\SolarWinds.SharedCommunication.Contracts\SolarWinds.SharedCommunication.Contracts.csproj", "{16AF7ADB-472B-4EE1-B6F4-1D30F6B30B34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarWinds.SharedCommunication.Contracts", "SolarWinds.SharedCommunication.Contracts\SolarWinds.SharedCommunication.Contracts.csproj", "{16AF7ADB-472B-4EE1-B6F4-1D30F6B30B34}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarWinds.SharedCommunication", "Src\SolarWinds.SharedCommunication\SolarWinds.SharedCommunication.csproj", "{0FF8EADA-7E57-4270-A0A0-4D4E6D2DE54F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarWinds.SharedCommunication", "SolarWinds.SharedCommunication\SolarWinds.SharedCommunication.csproj", "{0FF8EADA-7E57-4270-A0A0-4D4E6D2DE54F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarWinds.SharedCommunication.Tests", "Src\SolarWinds.SharedCommunication.Tests\SolarWinds.SharedCommunication.Tests.csproj", "{72460003-4E3E-48AC-B57D-0FC10D349602}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarWinds.SharedCommunication.Tests", "SolarWinds.SharedCommunication.Tests\SolarWinds.SharedCommunication.Tests.csproj", "{72460003-4E3E-48AC-B57D-0FC10D349602}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedMemoryProvider", "Src\SharedMemoryProvider\SharedMemoryProvider.csproj", "{32133981-8F3A-4BCE-867D-0F9DEBF4EF51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedMemoryProvider", "SharedMemoryProvider\SharedMemoryProvider.csproj", "{32133981-8F3A-4BCE-867D-0F9DEBF4EF51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedMemoryUser", "Src\SharedMemoryUser\SharedMemoryUser.csproj", "{08EAE615-C299-4C22-9431-DE4A6B463567}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedMemoryUser", "SharedMemoryUser\SharedMemoryUser.csproj", "{08EAE615-C299-4C22-9431-DE4A6B463567}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D64E6DCA-C180-4A90-BE76-B122A8583F1D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "..\Tests", "{D64E6DCA-C180-4A90-BE76-B122A8583F1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
