@@ -61,46 +61,9 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             _cache[entryKey] = ie;
         }
 
-        public void Clear()
-        {
-            _cache.Clear();
-        }
-
         public long GetCacheSize()
         {
             return _cache.Values.Sum(v => v.Data.SerializedData.Length);
-        }
-
-        /// <summary>
-        /// Purges stale and soon stale items (if maximum size is requested)
-        /// It doesn't perform locking so purging doesn't happen on snapshot in time - rather on life data (but it's safe to call in concurrent environment)
-        /// </summary>
-        /// <param name="maxCacheSizeInBytes"></param>
-        public void RunPurge(long? maxCacheSizeInBytes = default)
-        {
-            long bytesToDelete = 0;
-            if (maxCacheSizeInBytes.HasValue)
-            {
-                if(maxCacheSizeInBytes <= 0)
-                    throw new ArgumentException("maxCacheSizeInBytes is expected to be greater than zero. Otherwise you can just clear the cache");
-                bytesToDelete = GetCacheSize() - maxCacheSizeInBytes.Value;
-            }
-
-            DateTime nowUtc = _dateTime.UtcNow;
-            foreach (KeyValuePair<string, InternalEntry> keyValuePair in _cache.OrderBy(kp => kp.Value.RemainingTtl(nowUtc)))
-            {
-                if (bytesToDelete > 0 || keyValuePair.Value.RemainingTtl(nowUtc) < TimeSpan.Zero)
-                {
-                    if (_cache.TryRemove(keyValuePair.Key, out _))
-                    {
-                        bytesToDelete -= keyValuePair.Value.Data.SerializedData.Length;
-                    }
-                }
-                else
-                {
-                    return;
-                }
-            }
         }
     }
 }

@@ -46,11 +46,6 @@ namespace SharedMemoryUser
             return;
         }
 
-        static void RateLimiterTest()
-        {
-            new RateLimiterTestBench().RunTest();
-        }
-
         static void WcfConsumerCacheTest()
         {
             WcfConsumer.Run();
