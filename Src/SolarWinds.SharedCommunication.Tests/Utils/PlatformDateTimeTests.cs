@@ -18,8 +18,8 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         [Test]
         public void UtcNowCorrect()
         {
-            Assert.NotNull(_platformDateTime);
-            Assert.AreEqual(_platformDateTime.UtcNow, DateTime.UtcNow);
+            Assert.That(_platformDateTime, Is.Not.Null);
+            Assert.That(_platformDateTime.UtcNow, Is.EqualTo(DateTime.UtcNow));
         }
     }
 }

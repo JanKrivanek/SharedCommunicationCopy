@@ -16,5 +16,6 @@ nuget SystemWrapper.Wrappers 0.22.0.141
 nuget NUnit == 3.12.0
 nuget NUnit3TestAdapter = 3.12.0
 nuget NUnit.Runners == 3.9.0
-nuget Moq = 4.5.3
 nuget dotCover ~> 2.7
+source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget_libs
+nuget Moq = 4.5.0
