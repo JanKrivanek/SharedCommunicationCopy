@@ -14,6 +14,56 @@ namespace SolarWinds.SharedCommunication.Utils
 
         Log _log = new Log();
 
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            if (!IsEnabled(logLevel))
+            {
+                return;
+            }
+
+            if (formatter == null)
+            {
+                throw new ArgumentNullException(nameof(formatter));
+            }
+
+            string message = formatter(state, exception);
+            if (!string.IsNullOrEmpty(message)
+                || exception != null)
+            {
+                switch (logLevel)
+                {
+                    case LogLevel.Critical:
+                        _log.Fatal(message, exception);
+                        break;
+
+                    case LogLevel.Debug:
+                        _log.Debug(message, exception);
+                        break;
+
+                    case LogLevel.Error:
+                        _log.Error(message, exception);
+                        break;
+
+                    case LogLevel.Information:
+                        _log.Info(message, exception);
+                        break;
+
+                    case LogLevel.Warning:
+                        _log.Warn(message, exception);
+                        break;
+
+                    case LogLevel.Trace:
+                        _log.Trace(message, exception);
+                        break;
+
+                    default:
+                        _log.Warn($"Encountered unknown log level {logLevel}, writing out as Info.");
+                        _log.Info(message, exception);
+                        break;
+                }
+            }
+        }
+
         public bool IsEnabled(LogLevel logLevel)
         {
             switch (logLevel)
@@ -32,6 +82,12 @@ namespace SolarWinds.SharedCommunication.Utils
                 default:
                     throw new ArgumentOutOfRangeException(nameof(logLevel));
             }
+        }
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            throw new NotImplementedException(
+                "BeginScope intentionally not supported. Will be provided with final version of logger adapter. If blocking now - method can be altered to return empty IDisposable");
         }
     }
 }

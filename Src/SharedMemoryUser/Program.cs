@@ -1,30 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Linq;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using SolarWinds.Logging.Log4Net;
-using SolarWinds.Logging;
-using SolarWinds.SharedCommunication.Contracts.DataCache;
-using SolarWinds.SharedCommunication.Contracts.Utils;
 using SolarWinds.SharedCommunication.DataCache.WCF;
-using SolarWinds.SharedCommunication.RateLimiter;
 using SolarWinds.SharedCommunication.Utils;
 
 namespace SharedMemoryUser
 {
-
-    
-
     class Program
     {
         static async Task Main(string[] args)
@@ -37,7 +22,6 @@ namespace SharedMemoryUser
             Console.WriteLine("WcfConsumer test done");
             Console.WriteLine("RateLimiter test will run on keypress");
             Console.ReadKey();
-
 
             Console.WriteLine("RateLimiter test done");
             Console.WriteLine("Will exit on keypress");
@@ -64,9 +48,7 @@ namespace SharedMemoryUser
                 return logConfiguration.GetLoggerProvider().CreateLogger("SdWanLogging");
             }
 
-            //
             //Logger creation with Castle.Winsdor DI context
-            //
             else
             {
                 // Register everything with Castle Windsor.
@@ -98,16 +80,6 @@ namespace SharedMemoryUser
                         return logger;
                     })
                     .LifestyleSingleton());
-
-
-                // Register a class that needs a logger.
-                //container.Register(Component.For<IMyLibraryClass>().ImplementedBy<MyLibraryClass>());
-
-                //...
-
-                // Resolve the library class that will do some logging. Invoke it.
-                //var libraryClass = container.Resolve<IMyLibraryClass>();
-                //libraryClass.DoThings();
 
                 var lgr = container.Resolve<ILogger<Program>>();
                 return lgr;
@@ -142,8 +114,6 @@ namespace SharedMemoryUser
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
     }
-
 }

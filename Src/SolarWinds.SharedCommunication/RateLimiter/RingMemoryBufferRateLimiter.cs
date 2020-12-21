@@ -8,25 +8,27 @@ namespace SolarWinds.SharedCommunication.RateLimiter
 {
     public class RingMemoryBufferRateLimiter : IRateLimiter
     {
-        private readonly IRateLimiterDataAccessor _rateLimiterDataAccessor;
-        private readonly IDateTime _dateTime;
-        private readonly int _rateLimiterCapacity;
-        private readonly TimeSpan _rateLimiterSpan;
+        private static readonly Task<bool> success = Task.FromResult(true);
+        private static readonly Task<bool> failure = Task.FromResult(false);
+        private readonly IRateLimiterDataAccessor rateLimiterDataAccessor;
+        private readonly IDateTime dateTime;
+        private readonly int rateLimiterCapacity;
+        private readonly TimeSpan rateLimiterSpan;
 
         public RingMemoryBufferRateLimiter(
             IRateLimiterDataAccessor rateLimiterDataAccessor,
             IDateTime dateTime)
         {
-            _rateLimiterDataAccessor = rateLimiterDataAccessor;
-            _dateTime = dateTime;
+            this.rateLimiterDataAccessor = rateLimiterDataAccessor;
+            this.dateTime = dateTime;
 
-            _rateLimiterCapacity = _rateLimiterDataAccessor.Capacity;
-            _rateLimiterSpan = new TimeSpan(_rateLimiterDataAccessor.SpanTicks);
+            rateLimiterCapacity = this.rateLimiterDataAccessor.Capacity;
+            rateLimiterSpan = new TimeSpan(this.rateLimiterDataAccessor.SpanTicks);
         }
 
         private void EnterSynchronization()
         {
-            SpinWait.SpinUntil(_rateLimiterDataAccessor.TryEnterSynchronizedRegion);
+            SpinWait.SpinUntil(rateLimiterDataAccessor.TryEnterSynchronizedRegion);
         }
 
         //Depending on version of OS and .NET framework, the granularity of timer and timer events can 1-15ms (15ms being the usual)
@@ -44,14 +46,14 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             try
             {
                 EnterSynchronization();
-                utcNow = _dateTime.UtcNow;
-                bool isFull = _rateLimiterDataAccessor.Size == _rateLimiterCapacity;
+                utcNow = dateTime.UtcNow;
+                bool isFull = rateLimiterDataAccessor.Size == rateLimiterCapacity;
 
                 if (isFull)
                 {
                     DateTime oldestEventUtc =
-                        new DateTime(_rateLimiterDataAccessor.OldestTimestampTicks);
-                    waitSpan = _rateLimiterSpan - (utcNow - oldestEventUtc);
+                        new DateTime(rateLimiterDataAccessor.OldestTimestampTicks);
+                    waitSpan = rateLimiterSpan - (utcNow - oldestEventUtc);
                     //prevent false wake ups by randomness
                     waitSpan = waitSpan <= TimeSpan.Zero ? TimeSpan.Zero : (waitSpan + GetRandomSaltSpan());
                 }
@@ -59,29 +61,27 @@ namespace SolarWinds.SharedCommunication.RateLimiter
                 isAcceptable = waitSpan <= maxAcceptableWaitingTime;
                 if (isAcceptable)
                 {
-                    _rateLimiterDataAccessor.CurrentTimestampTicks = (utcNow + waitSpan).Ticks;
+                    rateLimiterDataAccessor.CurrentTimestampTicks = (utcNow + waitSpan).Ticks;
                 }
             }
             finally
             {
-                _rateLimiterDataAccessor.ExitSynchronizedRegion();
+                rateLimiterDataAccessor.ExitSynchronizedRegion();
             }
 
             return isAcceptable;
         }
 
-        private static readonly Task<bool> _success = Task.FromResult(true);
-        private static readonly Task<bool> _failure = Task.FromResult(false);
         public Task<bool> WaitTillNextFreeSlotAsync(TimeSpan maxAcceptableWaitingTime, CancellationToken cancellationToken = default)
         {
             TimeSpan waitSpan;
             if (!ClaimSlotAndGetWaitingTime(maxAcceptableWaitingTime, out waitSpan))
             {
-                return _failure;
+                return failure;
             }
 
             if (waitSpan <= TimeSpan.Zero)
-                return _success;
+                return success;
             else
                 return Task.Delay(waitSpan, cancellationToken).ContinueWith(t => !t.IsCanceled);
         }

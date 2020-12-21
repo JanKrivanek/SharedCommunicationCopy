@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Channels;
-using System.Text;
 using SolarWinds.SharedCommunication.Contracts.DataCache;
 using SolarWinds.SharedCommunication.Contracts.Utils;
 
@@ -30,18 +27,18 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             }
         }
 
-        private readonly ConcurrentDictionary<string, InternalEntry> _cache = new ConcurrentDictionary<string, InternalEntry>();
-        private readonly IDateTime _dateTime;
+        private readonly ConcurrentDictionary<string, InternalEntry> cache = new ConcurrentDictionary<string, InternalEntry>();
+        private readonly IDateTime dateTime;
 
         public PollerDataCacheImpl(IDateTime dateTime)
         {
-            _dateTime = dateTime;
+            this.dateTime = dateTime;
         }
 
         public SerializedCacheEntry GetDataCacheEntry(string entryKey, TimeSpan ttl = default)
         {
             InternalEntry entry;
-            if (_cache.TryGetValue(entryKey, out entry) && entry.RemainingTtl(_dateTime.UtcNow, ttl) < TimeSpan.Zero)
+            if (cache.TryGetValue(entryKey, out entry) && entry.RemainingTtl(dateTime.UtcNow, ttl) < TimeSpan.Zero)
             {
                 entry = null;
             }
@@ -53,17 +50,17 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         {
             if (entry?.SerializedData == null)
             {
-                _cache.TryRemove(entryKey, out _);
+                cache.TryRemove(entryKey, out _);
                 return;
             }
 
-            InternalEntry ie = new InternalEntry(entry, ttl, _dateTime.UtcNow);
-            _cache[entryKey] = ie;
+            InternalEntry ie = new InternalEntry(entry, ttl, dateTime.UtcNow);
+            cache[entryKey] = ie;
         }
 
         public long GetCacheSize()
         {
-            return _cache.Values.Sum(v => v.Data.SerializedData.Length);
+            return cache.Values.Sum(v => v.Data.SerializedData.Length);
         }
     }
 }

@@ -6,16 +6,16 @@ namespace SolarWinds.SharedCommunication.DataCache
 {
     public class SingleProcessDataCacheFactory : IDataCacheFactory
     {
-        private readonly IDateTime _dateTime;
+        private readonly IDateTime dateTime;
 
         public SingleProcessDataCacheFactory(IDateTime dateTime)
         {
-            _dateTime = dateTime ?? throw new ArgumentNullException(nameof(dateTime));
+            this.dateTime = dateTime ?? throw new ArgumentNullException(nameof(dateTime));
         }
 
         public IDataCache<T> CreateCache<T>(string cacheName, TimeSpan ttl)
         {
-            return SingleProcessDataCache<T>.Create(cacheName, ttl, _dateTime);
+            return SingleProcessDataCache<T>.Create(cacheName, ttl, dateTime);
         }
     }
 }

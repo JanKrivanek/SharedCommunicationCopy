@@ -11,21 +11,20 @@ namespace SolarWinds.SharedCommunication.RateLimiter
 {
     public class CrossProcessRateLimiterFactory: ICrossProcessRateLimiterFactory
     {
-        private readonly IDateTime _dateTime;
-        private readonly IKernelObjectsPrivilegesChecker _privilegesChecker;
+        private readonly IDateTime dateTime;
+        private readonly IKernelObjectsPrivilegesChecker privilegesChecker;
 
         public CrossProcessRateLimiterFactory(IDateTime dateTime, IKernelObjectsPrivilegesChecker privilegesChecker)
         {
-            _dateTime = dateTime;
-            _privilegesChecker = privilegesChecker;
+            this.dateTime = dateTime;
+            this.privilegesChecker = privilegesChecker;
         }
 
         public IRateLimiter OpenOrCreate(string identifier, TimeSpan measureTime, int maxOccurencesPerTime)
         {
             RateLimiterSharedMemoryAccessor accesor =
-                new RateLimiterSharedMemoryAccessor(identifier, maxOccurencesPerTime, measureTime.Ticks, _privilegesChecker);
-            return new RingMemoryBufferRateLimiter(accesor, _dateTime);
+                new RateLimiterSharedMemoryAccessor(identifier, maxOccurencesPerTime, measureTime.Ticks, privilegesChecker);
+            return new RingMemoryBufferRateLimiter(accesor, dateTime);
         }
-
     }
 }

@@ -9,20 +9,20 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class PollerDataCacheService : PollerDataCacheImpl
     {
-        private ServiceHost _service;
+        private ServiceHost service;
 
         public PollerDataCacheService(IDateTime dateTime) : base(dateTime)
         { }
 
         public void Start()
         {
-            _service = new ServiceHost(this);
-            _service.Open();
+            service = new ServiceHost(this);
+            service.Open();
         }
 
         public void Shutdown()
         {
-            _service.Close();
+            service.Close();
         }
     }
 }

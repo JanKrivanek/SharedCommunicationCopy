@@ -9,6 +9,5 @@
         long SpanTicks { get; }
         long OldestTimestampTicks { get; }
         long CurrentTimestampTicks { get; set; }
-
     }
 }

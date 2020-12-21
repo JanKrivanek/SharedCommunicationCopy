@@ -1,41 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.AccessControl;
-using System.Text;
 using SolarWinds.SharedCommunication.Contracts.Utils;
-using SolarWinds.SharedCommunication.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache
 {
     public class SharedMemorySegment : ISharedMemorySegment
     {
-        private const long _STAMP_OFFSET = 0;
-        private const long _SIZE_OFFSET = _STAMP_OFFSET + sizeof(long);
-        private const long _CAPACITY_OFFSET = _SIZE_OFFSET + sizeof(long);
-        private const long _CONTENT_ADDRESS_OFFSET = _CAPACITY_OFFSET + sizeof(long);
-        private static readonly long _HEADERS_SIZE = _CONTENT_ADDRESS_OFFSET + Marshal.SizeOf<Guid>(); //Guid doesn't have sizeof constant
+        private const long stampOffset = 0;
+        private const long sizeOffset = stampOffset + sizeof(long);
+        private const long capacityOffset = sizeOffset + sizeof(long);
+        private const long contentAddressOffset = capacityOffset + sizeof(long);
+        private static readonly long headersSize = contentAddressOffset + Marshal.SizeOf<Guid>(); //Guid doesn't have sizeof constant
 
 
         //need to GC root this as view accessor doesn't take full ownership
-        private readonly MemoryMappedFile _mmf;
-        private readonly MemoryMappedViewAccessor _memoryAccessor;
+        private readonly MemoryMappedFile mmf;
+        private readonly MemoryMappedViewAccessor memoryAccessor;
         //need to GC root this as stream accessor doesn't take full ownership
-        private MemoryMappedFile _contentMmf;
-        private MemoryMappedViewStream _contentMemoryStream;
-        private Guid _lastKnownContentAddress = Guid.NewGuid();
+        private MemoryMappedFile contentMmf;
+        private MemoryMappedViewStream contentMemoryStream;
+        private Guid lastKnownContentAddress = Guid.NewGuid();
 
-        private readonly string _segmentName;
-        private readonly string _contnetSegmentNamePreffix;
+        private readonly string segmentName;
+        private readonly string contnetSegmentNamePreffix;
 
         public SharedMemorySegment(string segmentName, IKernelObjectsPrivilegesChecker kernelObjectsPrivilegesChecker)
         {
-            _segmentName = kernelObjectsPrivilegesChecker.KernelObjectsPrefix + segmentName;
-            _contnetSegmentNamePreffix = _segmentName + "_content_";
+            this.segmentName = kernelObjectsPrivilegesChecker.KernelObjectsPrefix + segmentName;
+            contnetSegmentNamePreffix = this.segmentName + "_content_";
 
             var security = new MemoryMappedFileSecurity();
             security.AddAccessRule(new AccessRule<MemoryMappedFileRights>(
@@ -43,16 +39,16 @@ namespace SolarWinds.SharedCommunication.DataCache
                 MemoryMappedFileRights.ReadWrite,
                 AccessControlType.Allow));
 
-            _mmf = MemoryMappedFile.CreateOrOpen(_segmentName, _HEADERS_SIZE, MemoryMappedFileAccess.ReadWrite,
+            mmf = MemoryMappedFile.CreateOrOpen(this.segmentName, headersSize, MemoryMappedFileAccess.ReadWrite,
                 MemoryMappedFileOptions.DelayAllocatePages, security, HandleInheritability.None);
-            _memoryAccessor = _mmf.CreateViewAccessor(0, _HEADERS_SIZE);
+            memoryAccessor = mmf.CreateViewAccessor(0, headersSize);
         }
 
 
-        public DateTime LastChangedUtc => new DateTime(_memoryAccessor.ReadInt64(_STAMP_OFFSET), DateTimeKind.Utc);
+        public DateTime LastChangedUtc => new DateTime(memoryAccessor.ReadInt64(stampOffset), DateTimeKind.Utc);
 
-        public long ContentSize => _memoryAccessor.ReadInt64(_SIZE_OFFSET);
-        public long Capacity => _memoryAccessor.ReadInt64(_CAPACITY_OFFSET);
+        public long ContentSize => memoryAccessor.ReadInt64(sizeOffset);
+        public long Capacity => memoryAccessor.ReadInt64(capacityOffset);
 
         public Guid ContentAddress
         {
@@ -60,21 +56,21 @@ namespace SolarWinds.SharedCommunication.DataCache
             {
                 int sz = Marshal.SizeOf<Guid>(); //16
                 byte[] guidData = new byte[sz];
-                _memoryAccessor.ReadArray(_CONTENT_ADDRESS_OFFSET, guidData, 0, sz);
+                memoryAccessor.ReadArray(contentAddressOffset, guidData, 0, sz);
                 return new Guid(guidData);
             }
         }
 
         private MemoryMappedViewStream EnsureContentStream()
         {
-            if (_lastKnownContentAddress == ContentAddress)
+            if (lastKnownContentAddress == ContentAddress)
             {
-                return _contentMemoryStream;
+                return contentMemoryStream;
             }
 
             //old MMF is obsolete - we need to release it
-            _contentMemoryStream?.Dispose();
-            _contentMmf?.Dispose();
+            contentMemoryStream?.Dispose();
+            contentMmf?.Dispose();
 
             var security = new MemoryMappedFileSecurity();
             security.AddAccessRule(new AccessRule<MemoryMappedFileRights>(
@@ -86,20 +82,20 @@ namespace SolarWinds.SharedCommunication.DataCache
             long newSize = ContentSize;
             if (newSize > 0)
             {
-                _contentMmf = MemoryMappedFile.CreateOrOpen(_contnetSegmentNamePreffix + newAddressGuid, newSize,
+                contentMmf = MemoryMappedFile.CreateOrOpen(contnetSegmentNamePreffix + newAddressGuid, newSize,
                     MemoryMappedFileAccess.ReadWrite,
                     MemoryMappedFileOptions.DelayAllocatePages, security, HandleInheritability.None);
-                _contentMemoryStream = _contentMmf.CreateViewStream(0, newSize);
+                contentMemoryStream = contentMmf.CreateViewStream(0, newSize);
             }
             else
             {
-                _contentMmf = null;
-                _contentMemoryStream = null;
+                contentMmf = null;
+                contentMemoryStream = null;
             }
 
-            _lastKnownContentAddress = newAddressGuid;
+            lastKnownContentAddress = newAddressGuid;
 
-            return _contentMemoryStream;
+            return contentMemoryStream;
         }
 
         public T ReadData<T>()
@@ -147,37 +143,37 @@ namespace SolarWinds.SharedCommunication.DataCache
             }
 
             EnsureContentStream().Write(bytes, 0, bytes.Length);
-            _memoryAccessor.Write(_SIZE_OFFSET, (long)bytes.Length);
-            _memoryAccessor.Write(_STAMP_OFFSET, (long)DateTime.UtcNow.Ticks);
+            memoryAccessor.Write(sizeOffset, (long)bytes.Length);
+            memoryAccessor.Write(stampOffset, (long)DateTime.UtcNow.Ticks);
         }
 
         public void Clear()
         {
             ReserveMemorySegment(0);
-            _memoryAccessor.Write(_SIZE_OFFSET, (long)0);
-            _memoryAccessor.Write(_STAMP_OFFSET, (long)0);
+            memoryAccessor.Write(sizeOffset, (long)0);
+            memoryAccessor.Write(stampOffset, (long)0);
         }
 
         private void ReserveMemorySegment(int capacity)
         {
-            _memoryAccessor.Write(_CAPACITY_OFFSET, (long)capacity);
-            _memoryAccessor.WriteArray(_CONTENT_ADDRESS_OFFSET, Guid.NewGuid().ToByteArray(), 0,
+            memoryAccessor.Write(capacityOffset, (long)capacity);
+            memoryAccessor.WriteArray(contentAddressOffset, Guid.NewGuid().ToByteArray(), 0,
                 Marshal.SizeOf<Guid>());
 
             EnsureContentStream();
         }
 
-        private static int CeilingToPowerOfTwo(int v)
+        private static int CeilingToPowerOfTwo(int value)
         {
             //source: https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-            v--;
-            v |= v >> 1;
-            v |= v >> 2;
-            v |= v >> 4;
-            v |= v >> 8;
-            v |= v >> 16;
-            v++;
-            return v;
+            value--;
+            value |= value >> 1;
+            value |= value >> 2;
+            value |= value >> 4;
+            value |= value >> 8;
+            value |= value >> 16;
+            value++;
+            return value;
         }
 
         private static int GetPaddedSize(int size)
@@ -190,10 +186,10 @@ namespace SolarWinds.SharedCommunication.DataCache
 
         public void Dispose()
         {
-            _mmf?.Dispose();
-            _memoryAccessor?.Dispose();
-            _contentMmf?.Dispose();
-            _contentMemoryStream?.Dispose();
+            mmf?.Dispose();
+            memoryAccessor?.Dispose();
+            contentMmf?.Dispose();
+            contentMemoryStream?.Dispose();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using SolarWinds.SharedCommunication.Contracts.RateLimiter;
 
 namespace SolarWinds.SharedCommunication.Contracts.RateLimiter
 {
