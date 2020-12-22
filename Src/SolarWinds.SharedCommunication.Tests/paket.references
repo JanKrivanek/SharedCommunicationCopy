@@ -1,3 +1,4 @@
 NUnit
 NUnit3TestAdapter
 Moq
+FluentAssertions

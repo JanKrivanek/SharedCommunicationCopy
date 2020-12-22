@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SolarWinds.SharedCommunication.Contracts.Utils;
@@ -20,18 +21,17 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         }
 
         [Test]
-        public void CreateAsyncSemaphore_Succeeds()
+        public void CreateAsyncSemaphore_ReturnsAsyncSemaphore()
         {
             //Act
             var result = _asyncSemaphoreFactory.Create(TestName);
             //Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.AssignableTo<IAsyncSemaphore>());
-            Assert.That(result, Is.InstanceOf<AsyncSemaphore>());
+            result.Should().NotBeNull();
+            result.Should().BeAssignableTo<IAsyncSemaphore>().And.BeOfType<AsyncSemaphore>();
         }
 
         [Test]
-        public void CreateAsyncSemaphore_With_KernelObjectsPrivilegesChecker_Succeeds()
+        public void CreateAsyncSemaphore_WithKernelObjectsPrivilegesChecker_ReturnsAsyncSemaphore()
         {
             //Arrange
             var kernelObjectsPrefixTest = "Global\\";
@@ -40,9 +40,8 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
             //Act
             var result = _asyncSemaphoreFactory.Create(TestName, kernelObjectsPrivilegesChecker.Object);
             //Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.AssignableTo<IAsyncSemaphore>());
-            Assert.That(result, Is.InstanceOf<AsyncSemaphore>());
+            result.Should().NotBeNull();
+            result.Should().BeAssignableTo<IAsyncSemaphore>().And.BeOfType<AsyncSemaphore>();
         }
 
     }

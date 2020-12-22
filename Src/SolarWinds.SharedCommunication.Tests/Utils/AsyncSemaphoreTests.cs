@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using SolarWinds.SharedCommunication.Contracts.Utils;
 using SolarWinds.SharedCommunication.Utils;
 using System;
@@ -12,29 +13,27 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         private IAsyncSemaphore _asyncSemaphore;
 
         [SetUp]
-        public void AsyncSemaphoreTests_SetUp()
-        {
-            _asyncSemaphore = new AsyncSemaphore(new Semaphore(1,1));
-        }
+        public void AsyncSemaphoreTests_SetUp() =>
+            _asyncSemaphore = new AsyncSemaphore(new Semaphore(1, 1));
 
         [Test]
-        public void WaitAsync_Succeeds()
+        public void WaitAsync_ReturnsTask()
         {
             //Act
             var result = _asyncSemaphore.WaitAsync();
             //Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<Task>());
+            result.Should().NotBeNull();
+            result.Should().BeAssignableTo<Task>();
         }
 
         [Test]
-        public void LockAsync_Succeeds()
+        public void LockAsync_ReturnsGenericTask()
         {
             //Act
             var result = _asyncSemaphore.LockAsync();
             //Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<Task<IDisposable>>());
+            result.Should().NotBeNull();
+            result.Should().BeAssignableTo<Task<IDisposable>>();
         }
     }
 }

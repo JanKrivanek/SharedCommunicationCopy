@@ -13,9 +13,10 @@ nuget SolarWinds.Copyright ~> 1.4.0
 nuget SystemWrapper.Wrappers 0.22.0.141
 
 # Unit test suppport
+source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget_libs
 nuget NUnit == 3.12.0
 nuget NUnit3TestAdapter = 3.12.0
 nuget NUnit.Runners == 3.9.0
 nuget dotCover ~> 2.7
-source http://dev-artifactory.dev.local/artifactory/api/nuget/nuget_libs
 nuget Moq = 4.5.0
+nuget FluentAssertions ~> 4.19.0

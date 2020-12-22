@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using SolarWinds.SharedCommunication.Contracts.Utils;
 using SolarWinds.SharedCommunication.Utils;
 using System;
@@ -10,19 +11,18 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         private ISynchronizationIdentifiersProvider _synchronizationIdentifiersProvider;
 
         [SetUp]
-        public void PlatformDateTimeTests_SetUp()
-        {
+        public void PlatformDateTimeTests_SetUp() =>
             _synchronizationIdentifiersProvider = new SynchronizationIdentifiersProvider();
-        }
 
         [TestCase("", "apiKey", "orgId")]
         [TestCase("BaseAddress", "", "orgId")]
         public void GetSynchronizationIdentifier_Fails(string apiBaseAddress, string apiKey, string orgId)
         {
+            //Act
+            Action action = () =>
+                _synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
             //Assert
-            Assert.That(_synchronizationIdentifiersProvider, Is.Not.Null);
-            Assert.Throws<ArgumentException>(
-                () => _synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId));
+            action.ShouldThrow<ArgumentException>();
         }
 
         [Test]
@@ -37,9 +37,8 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
             var result =
                 _synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
             //Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.Not.Empty);
-            Assert.That(result, Is.EqualTo(expectedResult));
+            result.Should().NotBeNullOrEmpty();
+            result.Should().Be(expectedResult);
         }
     }
 }

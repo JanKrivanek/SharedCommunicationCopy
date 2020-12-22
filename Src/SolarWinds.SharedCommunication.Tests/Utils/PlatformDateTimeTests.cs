@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using SolarWinds.SharedCommunication.Contracts.Utils;
 using SolarWinds.SharedCommunication.Utils;
 using System;
@@ -10,16 +11,15 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         private IDateTime _platformDateTime;
 
         [SetUp]
-        public void PlatformDateTimeTests_SetUp()
-        {
-            _platformDateTime = new PlatformDateTime();
-        }
+        public void PlatformDateTimeTests_SetUp() => _platformDateTime = new PlatformDateTime();
 
         [Test]
-        public void UtcNowCorrect()
+        public void UtcNow_ReturnsCorrectDateTime()
         {
-            Assert.That(_platformDateTime, Is.Not.Null);
-            Assert.That(_platformDateTime.UtcNow, Is.EqualTo(DateTime.UtcNow));
+            //Act
+            var result = _platformDateTime.UtcNow;
+            //Arrange
+            result.Should().Be(DateTime.UtcNow);
         }
     }
 }
