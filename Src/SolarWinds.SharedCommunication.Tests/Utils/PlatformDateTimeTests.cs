@@ -8,16 +8,16 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
 {
     public class PlatformDateTimeTests
     {
-        private IDateTime _platformDateTime;
+        private IDateTime platformDateTime;
 
         [SetUp]
-        public void PlatformDateTimeTests_SetUp() => _platformDateTime = new PlatformDateTime();
+        public void PlatformDateTimeTests_SetUp() => platformDateTime = new PlatformDateTime();
 
         [Test]
         public void UtcNow_ReturnsCorrectDateTime()
         {
             //Act
-            var result = _platformDateTime.UtcNow;
+            var result = platformDateTime.UtcNow;
             //Arrange
             result.Should().Be(DateTime.UtcNow);
         }

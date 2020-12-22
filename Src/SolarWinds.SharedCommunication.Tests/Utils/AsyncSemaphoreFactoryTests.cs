@@ -9,22 +9,22 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
 {
     public class AsyncSemaphoreFactoryTests
     {
-        private IAsyncSemaphoreFactory _asyncSemaphoreFactory;
-        private Mock<ILogger> _logger;
+        private IAsyncSemaphoreFactory asyncSemaphoreFactory;
+        private Mock<ILogger> logger;
         private const string TestName = "Test Name";
 
         [SetUp]
         public void AsyncSemaphoreFactoryTestsTests_SetUp()
         {
-            _logger = new Mock<ILogger>();
-            _asyncSemaphoreFactory = new AsyncSemaphoreFactory(_logger.Object);
+            logger = new Mock<ILogger>();
+            asyncSemaphoreFactory = new AsyncSemaphoreFactory(logger.Object);
         }
 
         [Test]
         public void CreateAsyncSemaphore_ReturnsAsyncSemaphore()
         {
             //Act
-            var result = _asyncSemaphoreFactory.Create(TestName);
+            var result = asyncSemaphoreFactory.Create(TestName);
             //Assert
             result.Should().NotBeNull();
             result.Should().BeAssignableTo<IAsyncSemaphore>().And.BeOfType<AsyncSemaphore>();
@@ -38,7 +38,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
             var kernelObjectsPrivilegesChecker = new Mock<IKernelObjectsPrivilegesChecker>();
             kernelObjectsPrivilegesChecker.Setup(k => k.KernelObjectsPrefix).Returns(kernelObjectsPrefixTest);
             //Act
-            var result = _asyncSemaphoreFactory.Create(TestName, kernelObjectsPrivilegesChecker.Object);
+            var result = asyncSemaphoreFactory.Create(TestName, kernelObjectsPrivilegesChecker.Object);
             //Assert
             result.Should().NotBeNull();
             result.Should().BeAssignableTo<IAsyncSemaphore>().And.BeOfType<AsyncSemaphore>();

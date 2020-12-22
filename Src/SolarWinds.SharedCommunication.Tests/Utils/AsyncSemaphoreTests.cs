@@ -10,17 +10,17 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
 {
     public class AsyncSemaphoreTests
     {
-        private IAsyncSemaphore _asyncSemaphore;
+        private IAsyncSemaphore asyncSemaphore;
 
         [SetUp]
         public void AsyncSemaphoreTests_SetUp() =>
-            _asyncSemaphore = new AsyncSemaphore(new Semaphore(1, 1));
+            asyncSemaphore = new AsyncSemaphore(new Semaphore(1, 1));
 
         [Test]
         public void WaitAsync_ReturnsTask()
         {
             //Act
-            var result = _asyncSemaphore.WaitAsync();
+            var result = asyncSemaphore.WaitAsync();
             //Assert
             result.Should().NotBeNull();
             result.Should().BeAssignableTo<Task>();
@@ -30,7 +30,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         public void LockAsync_ReturnsGenericTask()
         {
             //Act
-            var result = _asyncSemaphore.LockAsync();
+            var result = asyncSemaphore.LockAsync();
             //Assert
             result.Should().NotBeNull();
             result.Should().BeAssignableTo<Task<IDisposable>>();

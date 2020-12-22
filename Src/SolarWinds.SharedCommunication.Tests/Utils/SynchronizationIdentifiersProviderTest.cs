@@ -8,11 +8,11 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
 {
     public class SynchronizationIdentifiersProviderTest
     {
-        private ISynchronizationIdentifiersProvider _synchronizationIdentifiersProvider;
+        private ISynchronizationIdentifiersProvider synchronizationIdentifiersProvider;
 
         [SetUp]
         public void PlatformDateTimeTests_SetUp() =>
-            _synchronizationIdentifiersProvider = new SynchronizationIdentifiersProvider();
+            synchronizationIdentifiersProvider = new SynchronizationIdentifiersProvider();
 
         [TestCase("", "apiKey", "orgId")]
         [TestCase("BaseAddress", "", "orgId")]
@@ -20,7 +20,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         {
             //Act
             Action action = () =>
-                _synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
+                synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
             //Assert
             action.ShouldThrow<ArgumentException>();
         }
@@ -35,7 +35,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
             var expectedResult = "OH6GkFGoxY2Q+yyXlr2CdYxd3vEnFsmrJP87gO5wehs=";
             //Act
             var result =
-                _synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
+                synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
             //Assert
             result.Should().NotBeNullOrEmpty();
             result.Should().Be(expectedResult);
