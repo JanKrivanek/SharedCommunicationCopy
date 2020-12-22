@@ -14,14 +14,14 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         private const string TestName = "Test Name";
 
         [SetUp]
-        public void AsyncSemaphoreFactoryTestsTests_SetUp()
+        public void SetUp()
         {
             logger = new Mock<ILogger>();
             asyncSemaphoreFactory = new AsyncSemaphoreFactory(logger.Object);
         }
 
         [Test]
-        public void CreateAsyncSemaphore_ReturnsAsyncSemaphore()
+        public void Create_WithValidName_ReturnsAsyncSemaphore()
         {
             //Act
             var result = asyncSemaphoreFactory.Create(TestName);
@@ -31,7 +31,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         }
 
         [Test]
-        public void CreateAsyncSemaphore_WithKernelObjectsPrivilegesChecker_ReturnsAsyncSemaphore()
+        public void Create_WithValidNameAndKernelObjectsPrivilegesChecker_ReturnsAsyncSemaphore()
         {
             //Arrange
             var kernelObjectsPrefixTest = "Global\\";

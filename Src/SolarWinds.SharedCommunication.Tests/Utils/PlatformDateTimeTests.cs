@@ -11,7 +11,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         private IDateTime platformDateTime;
 
         [SetUp]
-        public void PlatformDateTimeTests_SetUp() => platformDateTime = new PlatformDateTime();
+        public void SetUp() => platformDateTime = new PlatformDateTime();
 
         [Test]
         public void UtcNow_ReturnsCorrectDateTime()

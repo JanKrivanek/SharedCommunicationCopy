@@ -13,7 +13,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         private IAsyncSemaphore asyncSemaphore;
 
         [SetUp]
-        public void AsyncSemaphoreTests_SetUp() =>
+        public void SetUp() =>
             asyncSemaphore = new AsyncSemaphore(new Semaphore(1, 1));
 
         [Test]

@@ -11,12 +11,12 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         private ISynchronizationIdentifiersProvider synchronizationIdentifiersProvider;
 
         [SetUp]
-        public void PlatformDateTimeTests_SetUp() =>
+        public void SetUp() =>
             synchronizationIdentifiersProvider = new SynchronizationIdentifiersProvider();
 
         [TestCase("", "apiKey", "orgId")]
         [TestCase("BaseAddress", "", "orgId")]
-        public void GetSynchronizationIdentifier_Fails(string apiBaseAddress, string apiKey, string orgId)
+        public void GetSynchronizationIdentifier_WithInvalidArguments_ThrowsArgumentException(string apiBaseAddress, string apiKey, string orgId)
         {
             //Act
             Action action = () =>
@@ -26,7 +26,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         }
 
         [Test]
-        public void GetSynchronizationIdentifier_Succeeds()
+        public void GetSynchronizationIdentifier_WithValidArguments_ReturnsIdentifier()
         {
             //Arrange
             var apiBaseAddress = "net.tcp://localhost:17777/SolarWinds/PollerCache";
