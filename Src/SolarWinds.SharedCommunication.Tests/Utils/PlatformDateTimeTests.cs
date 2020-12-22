@@ -19,7 +19,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
             //Act
             var result = platformDateTime.UtcNow;
             //Arrange
-            result.Should().Be(DateTime.UtcNow);
+            result.Should().BeCloseTo(DateTime.UtcNow);
         }
     }
 }
