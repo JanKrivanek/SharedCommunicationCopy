@@ -28,6 +28,34 @@ namespace SolarWinds.SharedCommunication.RateLimiter
         //we need the raw pointer for CAS operations
         private readonly IntPtr latchAddress;
 
+        public int Capacity { get; }
+        public int Size
+        {
+            get => memoryAccessor.ReadInt32(sizeOffset);
+            set => memoryAccessor.Write(sizeOffset, value >= Capacity ? Capacity : value);
+        }
+
+        public long SpanTicks { get; }
+
+        public long CurrentTimestampTicks
+        {
+            get => ringBuffermemoryAccessor.ReadInt64(GetWrapIndex(CurrentIndex - 1) * sizeof(long));
+
+            set
+            {
+                ringBuffermemoryAccessor.Write(CurrentIndex * sizeof(long), value);
+                //properties handle wrapping appropriately
+                Size++;
+                CurrentIndex++;
+            }
+        }
+
+        private int CurrentIndex
+        {
+            get => memoryAccessor.ReadInt32(currentIdxOffset);
+            set => memoryAccessor.Write(currentIdxOffset, GetWrapIndex(value));
+        }
+
         public RateLimiterSharedMemoryAccessor(
             string segmentName, 
             int capacity, 
@@ -84,12 +112,9 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             Thread.MemoryBarrier();
         }
 
-        public int Capacity { get; }
-        public int Size
-        {
-            get => memoryAccessor.ReadInt32(sizeOffset);
-            set => memoryAccessor.Write(sizeOffset, value >= Capacity ? Capacity : value);
-        }
+        public long OldestTimestampTicks =>
+            ringBuffermemoryAccessor.ReadInt64(CurrentIndex * sizeof(long));
+
 
         private int GetWrapIndex(int i)
         {
@@ -98,30 +123,6 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             if (i >= Capacity)
                 return 0;
             return i;
-        }
-
-        public long SpanTicks { get; }
-
-        public long OldestTimestampTicks =>
-            ringBuffermemoryAccessor.ReadInt64(CurrentIndex * sizeof(long));
-
-        private int CurrentIndex
-        {
-            get => memoryAccessor.ReadInt32(currentIdxOffset);
-            set => memoryAccessor.Write(currentIdxOffset, GetWrapIndex(value));
-        }
-
-        public long CurrentTimestampTicks
-        {
-            get => ringBuffermemoryAccessor.ReadInt64(GetWrapIndex(CurrentIndex - 1) * sizeof(long));
-
-            set
-            {
-                ringBuffermemoryAccessor.Write(CurrentIndex * sizeof(long), value);
-                //properties handle wrapping appropriately
-                Size++;
-                CurrentIndex++;
-            }
         }
     }
 }

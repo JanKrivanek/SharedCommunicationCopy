@@ -31,7 +31,6 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             asyncSemaphore = semaphoreFactory.Create(cacheName + "_MTX");
             key = cacheName;
         }
-
         
         ///<inheritdoc/>
         public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)

@@ -4,9 +4,9 @@ using SolarWinds.SharedCommunication.Utils;
 
 namespace SharedMemoryProvider
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             PollerDataCacheService pdc = new PollerDataCacheService(new PlatformDateTime());
             pdc.Start();

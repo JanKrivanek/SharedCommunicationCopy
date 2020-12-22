@@ -29,9 +29,10 @@ namespace SolarWinds.SharedCommunication.Utils
 
         private class KernelObjectsPrivilegesCheckerImpl : IKernelObjectsPrivilegesChecker
         {
+            private const string globalNamespacePrefix = "Global\\";
+
             public bool CanWriteToGlobalNamespace { get; }
             public string KernelObjectsPrefix { get; }
-            private const string globalNamespacePrefix = "Global\\";
 
             public KernelObjectsPrivilegesCheckerImpl(ILogger logger)
             {
