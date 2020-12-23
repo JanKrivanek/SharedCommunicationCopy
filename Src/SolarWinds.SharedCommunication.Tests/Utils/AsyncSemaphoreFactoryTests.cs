@@ -34,12 +34,13 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         public void Create_WithValidNameAndKernelObjectsPrivilegesChecker_ReturnsAsyncSemaphore()
         {
             //Arrange
-            var kernelObjectsPrefixTest = "Global\\";
+            const string kernelObjectsPrefixTest = "Global\\";
             var kernelObjectsPrivilegesChecker = new Mock<IKernelObjectsPrivilegesChecker>();
             kernelObjectsPrivilegesChecker.Setup(k => k.KernelObjectsPrefix).Returns(kernelObjectsPrefixTest);
             //Act
             var result = asyncSemaphoreFactory.Create(TestName, kernelObjectsPrivilegesChecker.Object);
             //Assert
+            kernelObjectsPrivilegesChecker.Verify(k=>k.KernelObjectsPrefix, Times.Once);
             result.Should().NotBeNull();
             result.Should().BeAssignableTo<IAsyncSemaphore>().And.BeOfType<AsyncSemaphore>();
         }

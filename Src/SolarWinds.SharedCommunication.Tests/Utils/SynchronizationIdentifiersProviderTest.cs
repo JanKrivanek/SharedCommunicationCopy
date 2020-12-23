@@ -29,10 +29,10 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
         public void GetSynchronizationIdentifier_WithValidArguments_ReturnsIdentifier()
         {
             //Arrange
-            var apiBaseAddress = "net.tcp://localhost:17777/SolarWinds/PollerCache";
-            var apiKey = "123";
-            var orgId = "5";
-            var expectedResult = "OH6GkFGoxY2Q+yyXlr2CdYxd3vEnFsmrJP87gO5wehs=";
+            const string apiBaseAddress = "net.tcp://localhost:17777/SolarWinds/PollerCache";
+            const string apiKey = "123";
+            const string orgId = "5";
+            const string expectedResult = "OH6GkFGoxY2Q+yyXlr2CdYxd3vEnFsmrJP87gO5wehs=";
             //Act
             var result =
                 synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
