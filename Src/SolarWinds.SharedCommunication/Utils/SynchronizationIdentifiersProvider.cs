@@ -5,8 +5,18 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.Utils
 {
+    /// <summary>
+    /// class for synchronization identifiers provider
+    /// </summary>
     public class SynchronizationIdentifiersProvider: ISynchronizationIdentifiersProvider
     {
+        /// <summary>
+        /// gets synchronization identifier
+        /// </summary>
+        /// <param name="apiBaseAddress"> API base address</param>
+        /// <param name="apiKey"> API key </param>
+        /// <param name="orgId"> organization identifier </param>
+        /// <returns></returns>
         public string GetSynchronizationIdentifier(string apiBaseAddress, string apiKey, string orgId)
         {
             if (string.IsNullOrEmpty(apiBaseAddress))
@@ -32,6 +42,12 @@ namespace SolarWinds.SharedCommunication.Utils
             return id;
         }
 
+        /// <summary>
+        /// overloaded method for getting synchronization identifier
+        /// </summary>
+        /// <param name="apiBaseAddress"> API base address </param>
+        /// <param name="apiKey"> API key </param>
+        /// <returns></returns>
         public string GetSynchronizationIdentifier(string apiBaseAddress, string apiKey)
         {
             return GetSynchronizationIdentifier(apiBaseAddress, apiKey, null);

@@ -4,6 +4,9 @@ using SolarWinds.SharedCommunication.Contracts.DataCache;
 
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
+    /// <summary>
+    /// interface for poller data cache
+    /// </summary>
     [ServiceContract(Name = "PollerDataCache", Namespace = "http://schemas.solarwinds.com/2020/09/jobengine")]
     internal interface IPollerDataCache
     {

@@ -5,12 +5,20 @@ using Microsoft.Extensions.Logging;
 
 namespace SolarWinds.SharedCommunication.Utils
 {
+    /// <summary>
+    /// class for kernel objects privileges checker
+    /// </summary>
     public class KernelObjectsPrivilegesChecker : IKernelObjectsPrivilegesChecker
     {
         public bool CanWriteToGlobalNamespace => instance.CanWriteToGlobalNamespace;
         public string KernelObjectsPrefix => instance.KernelObjectsPrefix;
         private static IKernelObjectsPrivilegesChecker instance;
 
+        /// <summary>
+        /// method for getting the instance of the checker
+        /// </summary>
+        /// <param name="logger"> logger </param>
+        /// <returns></returns>
         public static IKernelObjectsPrivilegesChecker GetInstance(ILogger logger)
         {
             //no synchro needed here; we're fine with race
@@ -27,6 +35,9 @@ namespace SolarWinds.SharedCommunication.Utils
             GetInstance(logger);
         }
 
+        /// <summary>
+        /// class for getting single instance of the privilege checker
+        /// </summary>
         private class KernelObjectsPrivilegesCheckerImpl : IKernelObjectsPrivilegesChecker
         {
             private const string globalNamespacePrefix = "Global\\";

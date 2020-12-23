@@ -6,6 +6,9 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
+    /// <summary>
+    /// a class for ring memory buffer rate limiter
+    /// </summary>
     public class RingMemoryBufferRateLimiter : IRateLimiter
     {
         private static readonly Task<bool> success = Task.FromResult(true);
@@ -24,6 +27,45 @@ namespace SolarWinds.SharedCommunication.RateLimiter
 
             rateLimiterCapacity = this.rateLimiterDataAccessor.Capacity;
             rateLimiterSpan = new TimeSpan(this.rateLimiterDataAccessor.SpanTicks);
+        }
+
+        /// <summary>
+        /// task for waiting until there is a next free slot
+        /// </summary>
+        /// <param name="maxAcceptableWaitingTime"> limit of time waiting </param>
+        /// <param name="cancellationToken"> cancellation token </param>
+        /// <returns></returns>
+        public Task<bool> WaitTillNextFreeSlotAsync(TimeSpan maxAcceptableWaitingTime, CancellationToken cancellationToken = default)
+        {
+            TimeSpan waitSpan;
+            if (!ClaimSlotAndGetWaitingTime(maxAcceptableWaitingTime, out waitSpan))
+            {
+                return failure;
+            }
+
+            if (waitSpan <= TimeSpan.Zero)
+                return success;
+            else
+                return Task.Delay(waitSpan, cancellationToken).ContinueWith(t => !t.IsCanceled);
+        }
+
+        /// <summary>
+        /// task to sleep until there is next free slot
+        /// </summary>
+        /// <param name="maxAcceptableWaitingTime"> limit of time to wait </param>
+        /// <returns></returns>
+        public bool BlockTillNextFreeSlot(TimeSpan maxAcceptableWaitingTime)
+        {
+            TimeSpan waitSpan;
+            if (!ClaimSlotAndGetWaitingTime(maxAcceptableWaitingTime, out waitSpan))
+            {
+                return false;
+            }
+
+            if (waitSpan > TimeSpan.Zero)
+                Thread.Sleep(waitSpan);
+
+            return true;
         }
 
         private void EnterSynchronization()
@@ -70,34 +112,6 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             }
 
             return isAcceptable;
-        }
-
-        public Task<bool> WaitTillNextFreeSlotAsync(TimeSpan maxAcceptableWaitingTime, CancellationToken cancellationToken = default)
-        {
-            TimeSpan waitSpan;
-            if (!ClaimSlotAndGetWaitingTime(maxAcceptableWaitingTime, out waitSpan))
-            {
-                return failure;
-            }
-
-            if (waitSpan <= TimeSpan.Zero)
-                return success;
-            else
-                return Task.Delay(waitSpan, cancellationToken).ContinueWith(t => !t.IsCanceled);
-        }
-
-        public bool BlockTillNextFreeSlot(TimeSpan maxAcceptableWaitingTime)
-        {
-            TimeSpan waitSpan;
-            if (!ClaimSlotAndGetWaitingTime(maxAcceptableWaitingTime, out waitSpan))
-            {
-                return false;
-            }
-
-            if (waitSpan > TimeSpan.Zero)
-                Thread.Sleep(waitSpan);
-
-            return true;
         }
     }
 }

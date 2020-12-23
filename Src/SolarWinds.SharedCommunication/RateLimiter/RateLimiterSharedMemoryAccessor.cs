@@ -7,6 +7,9 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
+    /// <summary>
+    /// class for rate limiter shared memory accessor
+    /// </summary>
     internal class RateLimiterSharedMemoryAccessor : IRateLimiterDataAccessor
     {
         private const long interlockLatchOffset = 0;
@@ -100,11 +103,18 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             latchAddress = memoryAccessor.SafeMemoryMappedViewHandle.DangerousGetHandle();
         }
 
+        /// <summary>
+        /// tries if the synchronized region is lock free
+        /// </summary>
+        /// <returns></returns>
         public unsafe bool TryEnterSynchronizedRegion()
         {
             return Interlocked.CompareExchange(ref (*((int*)(latchAddress))), lockTaken, lockFree) == lockFree;
         }
 
+        /// <summary>
+        /// exits the synchronized region
+        /// </summary>
         public void ExitSynchronizedRegion()
         {
             memoryAccessor.Write(interlockLatchOffset, (int)0);

@@ -9,9 +9,10 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
     ///<inheritdoc/>
-    internal class DataCacheServiceClient<T> : DelayedDisposalSharedObject<DataCacheServiceClient<T>>, IDataCache<T> //where T : ICacheEntry
+    internal class DataCacheServiceClient<T> : DelayedDisposalSharedObject<DataCacheServiceClient<T>>, IDataCache<T>
     {
         private readonly PollerDataCacheClient cacheClient = new PollerDataCacheClient();
+
         //TODO: this must be done differently - different types have different ttl (e.g. topology has longer polling interval)
         // ttl can change during runtime. We might need to expose it through the individual calls
         private readonly TimeSpan ttl;
@@ -19,6 +20,13 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         private readonly string key;
         private readonly DataContractSerializer serializer = new DataContractSerializer(typeof(T));
 
+        /// <summary>
+        /// creates a data cache service client based on name, ttl and semaphore factory
+        /// </summary>
+        /// <param name="cacheName"> name of cache </param>
+        /// <param name="ttl"> time to live </param>
+        /// <param name="semaphoreFactory"> semaphore factory </param>
+        /// <returns></returns>
         public static DataCacheServiceClient<T> Create(string cacheName, TimeSpan ttl,
             IAsyncSemaphoreFactory semaphoreFactory)
         {

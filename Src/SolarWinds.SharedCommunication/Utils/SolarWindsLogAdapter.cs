@@ -1,19 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SolarWinds.Logging;
 
 namespace SolarWinds.SharedCommunication.Utils
 {
+    /// <summary>
+    /// class for the log adapter
+    /// </summary>
     public class SolarWindsLogAdapter : ILogger
     {
         public static ILogger CreateLogger() => new SolarWindsLogAdapter();
 
         Log _log = new Log();
 
+        /// <summary>
+        /// method that does logging
+        /// </summary>
+        /// <typeparam name="TState"></typeparam>
+        /// <param name="logLevel"> log level </param>
+        /// <param name="eventId"> event identifier </param>
+        /// <param name="state"> state </param>
+        /// <param name="exception"> thrown exception </param>
+        /// <param name="formatter"> formatter func</param>
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
@@ -64,6 +72,11 @@ namespace SolarWinds.SharedCommunication.Utils
             }
         }
 
+        /// <summary>
+        /// checks if the log level is enabled
+        /// </summary>
+        /// <param name="logLevel"> log level </param>
+        /// <returns></returns>
         public bool IsEnabled(LogLevel logLevel)
         {
             switch (logLevel)
@@ -84,6 +97,12 @@ namespace SolarWinds.SharedCommunication.Utils
             }
         }
 
+        /// <summary>
+        /// needs to be implemented
+        /// </summary>
+        /// <typeparam name="TState"></typeparam>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public IDisposable BeginScope<TState>(TState state)
         {
             throw new NotImplementedException(

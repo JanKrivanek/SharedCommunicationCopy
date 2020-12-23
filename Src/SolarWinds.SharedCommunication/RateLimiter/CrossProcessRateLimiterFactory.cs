@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SolarWinds.SharedCommunication.Contracts.RateLimiter;
 using SolarWinds.SharedCommunication.Contracts.Utils;
-using SolarWinds.SharedCommunication.Utils;
 
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
+    /// <summary>
+    /// a class for cross process rate limiter factory
+    /// </summary>
     public class CrossProcessRateLimiterFactory: ICrossProcessRateLimiterFactory
     {
         private readonly IDateTime dateTime;
@@ -20,6 +18,13 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             this.privilegesChecker = privilegesChecker;
         }
 
+        /// <summary>
+        /// opens or creats a rate limiter shared memory accessor
+        /// </summary>
+        /// <param name="identifier"> id of the accessor </param>
+        /// <param name="measureTime"> time parameter to get span ticks for the accessor </param>
+        /// <param name="maxOccurencesPerTime"> capacity of the accessor</param>
+        /// <returns></returns>
         public IRateLimiter OpenOrCreate(string identifier, TimeSpan measureTime, int maxOccurencesPerTime)
         {
             RateLimiterSharedMemoryAccessor accesor =

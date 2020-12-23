@@ -8,6 +8,9 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache
 {
+    /// <summary>
+    /// a class that represents shared memory segment
+    /// </summary>
     public class SharedMemorySegment : ISharedMemorySegment
     {
         private const long stampOffset = 0;
@@ -61,6 +64,10 @@ namespace SolarWinds.SharedCommunication.DataCache
             }
         }
 
+        /// <summary>
+        /// method for opening the memory mapped view stream with needed rights
+        /// </summary>
+        /// <returns></returns>
         private MemoryMappedViewStream EnsureContentStream()
         {
             if (lastKnownContentAddress == ContentAddress)
@@ -98,6 +105,11 @@ namespace SolarWinds.SharedCommunication.DataCache
             return contentMemoryStream;
         }
 
+        /// <summary>
+        /// method for reading data from memory segment
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T ReadData<T>()
         {
             var stream = EnsureContentStream();
@@ -108,6 +120,11 @@ namespace SolarWinds.SharedCommunication.DataCache
             return (T)ds.ReadObject(stream);
         }
 
+        /// <summary>
+        /// method for writing data to memory segment
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"> data to write </param>
         public void WriteData<T>(T data)
         {
             if (data == null)
@@ -123,6 +140,10 @@ namespace SolarWinds.SharedCommunication.DataCache
             this.WriteBytes(bytes);
         }
 
+        /// <summary>
+        /// method for reading bytes from a memory segment
+        /// </summary>
+        /// <returns></returns>
         public byte[] ReadBytes()
         {
             var stream = EnsureContentStream();
@@ -134,6 +155,10 @@ namespace SolarWinds.SharedCommunication.DataCache
             return data;
         }
 
+        /// <summary>
+        /// method for writing bytes to memory segment
+        /// </summary>
+        /// <param name="bytes"> bytes to write </param>
         public void WriteBytes(byte[] bytes)
         {
             //if we have too small or too big segment
@@ -147,6 +172,9 @@ namespace SolarWinds.SharedCommunication.DataCache
             memoryAccessor.Write(stampOffset, (long)DateTime.UtcNow.Ticks);
         }
 
+        /// <summary>
+        /// method for clearing the memory segment
+        /// </summary>
         public void Clear()
         {
             ReserveMemorySegment(0);

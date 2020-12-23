@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 
 namespace SolarWinds.SharedCommunication.DataCache
 {
+    /// <summary>
+    /// statis class for destroy delay parameter
+    /// </summary>
     public static class DelayedCacheDisposingSetting
     {
         public static TimeSpan DestroyDelay { get; set; } = TimeSpan.FromMinutes(10);
     }
 
+    /// <summary>
+    /// abstract class for shared object
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class DelayedDisposalSharedObject<T> where T : DelayedDisposalSharedObject<T>
     {
         //the type is intentionaly generic to ensure separate instances dictionaries per type
@@ -26,6 +33,9 @@ namespace SolarWinds.SharedCommunication.DataCache
 
         protected abstract void DisposeImpl();
 
+        /// <summary>
+        /// method for releasing the shared object
+        /// </summary>
         protected void Release()
         {
             //Cannot dispose unconditionally here, as there might be other users of the cache

@@ -5,6 +5,9 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.Utils
 {
+    /// <summary>
+    /// a class  for async semaphore
+    /// </summary>
     public class AsyncSemaphore : IAsyncSemaphore
     {
         //Semaphore doesn't enforce the ownership - so we can release it from different thread than acquiring
@@ -23,16 +26,29 @@ namespace SolarWinds.SharedCommunication.Utils
             public IDisposable Handle { get; set; }
         }
 
+        /// <summary>
+        /// wrapper of LockAsync task
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public Task WaitAsync(CancellationToken token = default)
         {
             return LockAsync(token);
         }
 
+        /// <summary>
+        /// method for releasing the semaphore
+        /// </summary>
         public void Release()
         {
             semaphore.Release();
         }
 
+        /// <summary>
+        /// task for locking the resource
+        /// </summary>
+        /// <param name="token"> cancellation token </param>
+        /// <returns></returns>
         public Task<IDisposable> LockAsync(CancellationToken token = default)
         {
             TaskCompletionSource<IDisposable> tcs = new TaskCompletionSource<IDisposable>();
@@ -73,6 +89,9 @@ namespace SolarWinds.SharedCommunication.Utils
             semaphore.Dispose();
         }
 
+        /// <summary>
+        /// class for lock context, wrapped of standard semaphore
+        /// </summary>
         private class LockContext : IDisposable
         {
             private readonly Semaphore semaphore;

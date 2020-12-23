@@ -10,8 +10,16 @@ using SolarWinds.SharedCommunication.Utils;
 
 namespace SharedMemoryUser
 {
+    /// <summary>
+    /// a testing class for WCF consumer
+    /// </summary>
     public class WcfConsumer
     {
+        /// <summary>
+        /// creates logger for specfied DI context
+        /// </summary>
+        /// <param name="useDi"> shows whether DI context is present</param>
+        /// <returns></returns>
         public static ILogger CreateLogger(bool useDi)
         {
             //
