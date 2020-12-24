@@ -1,2 +1,3 @@
-NUnit
-NUnit3TestAdapter
+group 3rdParty
+    NUnit
+    NUnit3TestAdapter
