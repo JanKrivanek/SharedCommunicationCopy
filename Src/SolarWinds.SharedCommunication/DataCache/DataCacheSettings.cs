@@ -3,7 +3,7 @@
 namespace SolarWinds.SharedCommunication.DataCache
 {
     /// <summary>
-    /// a class for data cache settings
+    /// A class for data cache settings.
     /// </summary>
     public class DataCacheSettings
     {

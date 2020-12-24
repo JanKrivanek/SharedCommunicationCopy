@@ -5,7 +5,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache
 {
     /// <summary>
-    /// a class for single process data cache factory
+    /// A class for single process data cache factory.
     /// </summary>
     public class SingleProcessDataCacheFactory : IDataCacheFactory
     {
@@ -17,12 +17,11 @@ namespace SolarWinds.SharedCommunication.DataCache
         }
 
         /// <summary>
-        /// creates a single process data cache
+        /// A method for creating a single process data cache based on cache name and TTL.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="cacheName"> cache name </param>
-        /// <param name="ttl"> time to live </param>
-        /// <returns></returns>
+        /// <param name="cacheName">Cache name.</param>
+        /// <param name="ttl">Time to live.</param>
+        /// <returns>Created data cache.</returns>
         public IDataCache<T> CreateCache<T>(string cacheName, TimeSpan ttl)
         {
             return SingleProcessDataCache<T>.Create(cacheName, ttl, dateTime);

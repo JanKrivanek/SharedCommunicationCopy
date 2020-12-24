@@ -62,16 +62,8 @@ namespace SolarWinds.SharedCommunication.DataCache
         public void EraseData()
         {
             //synchronisation is needed, as erasing is multistep and one of the steps is clearing the memory.
-            // parallel writers could then write to deallocated memory segment
+            //parallel writers could then write to deallocated memory segment
             EraseDataAsync().Wait();
-        }
-
-        private async Task EraseDataAsync()
-        {
-            using (await asyncSemaphore.LockAsync().ConfigureAwait(false))
-            {
-                memorySegment.Clear();
-            }
         }
 
         ///<inheritdoc/>
@@ -87,6 +79,14 @@ namespace SolarWinds.SharedCommunication.DataCache
         {
             memorySegment.Dispose();
             asyncSemaphore.Dispose();
+        }
+
+        private async Task EraseDataAsync()
+        {
+            using (await asyncSemaphore.LockAsync().ConfigureAwait(false))
+            {
+                memorySegment.Clear();
+            }
         }
     }
 }

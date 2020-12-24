@@ -5,9 +5,8 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
     /// <summary>
-    /// factory for creating data cache service clients
+    /// Factory for creating data cache service clients.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class DataCacheServiceClientFactory<T> 
     {
         private readonly IAsyncSemaphoreFactory semaphoreFactory;
@@ -18,11 +17,11 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         }
 
         /// <summary>
-        /// creates a cache based on name and ttl. Optionally we can change ttl to be per cache call
+        /// Creates a cache based on name and ttl. Optionally we can change ttl to be per cache call.
         /// </summary>
-        /// <param name="cacheName"> cache name </param>
-        /// <param name="ttl"> time to live </param>
-        /// <returns></returns>
+        /// <param name="cacheName">Cache name.</param>
+        /// <param name="ttl">Time to live.</param>
+        /// <returns>Data cache service client.</returns>
         public IDataCache<T> CreateCache(string cacheName, TimeSpan ttl)
         {
             return DataCacheServiceClient<T>.Create(cacheName, ttl, semaphoreFactory);

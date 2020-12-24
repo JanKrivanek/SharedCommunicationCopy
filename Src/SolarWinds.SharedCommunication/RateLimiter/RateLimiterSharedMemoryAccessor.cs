@@ -8,7 +8,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
     /// <summary>
-    /// class for rate limiter shared memory accessor
+    /// A class for rate limiter shared memory accessor.
     /// </summary>
     internal class RateLimiterSharedMemoryAccessor : IRateLimiterDataAccessor
     {
@@ -47,6 +47,7 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             set
             {
                 ringBuffermemoryAccessor.Write(CurrentIndex * sizeof(long), value);
+
                 //properties handle wrapping appropriately
                 Size++;
                 CurrentIndex++;
@@ -104,16 +105,15 @@ namespace SolarWinds.SharedCommunication.RateLimiter
         }
 
         /// <summary>
-        /// tries if the synchronized region is lock free
+        /// Tries if the synchronized region is lock free.
         /// </summary>
-        /// <returns></returns>
         public unsafe bool TryEnterSynchronizedRegion()
         {
             return Interlocked.CompareExchange(ref (*((int*)(latchAddress))), lockTaken, lockFree) == lockFree;
         }
 
         /// <summary>
-        /// exits the synchronized region
+        /// Exits the synchronized region.
         /// </summary>
         public void ExitSynchronizedRegion()
         {

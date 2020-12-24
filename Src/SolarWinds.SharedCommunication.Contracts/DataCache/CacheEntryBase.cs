@@ -3,7 +3,7 @@
 namespace SolarWinds.SharedCommunication.Contracts.DataCache
 {
     /// <summary>
-    /// abstract class for cache entry base
+    /// An abstract class for cache entry base.
     /// </summary>
     [DataContract]
     [KnownType(typeof(SerializedCacheEntry))]

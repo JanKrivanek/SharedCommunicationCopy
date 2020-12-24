@@ -7,7 +7,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
     /// <summary>
-    /// a class for ring memory buffer rate limiter
+    /// A class for ring memory buffer rate limiter.
     /// </summary>
     public class RingMemoryBufferRateLimiter : IRateLimiter
     {
@@ -30,11 +30,10 @@ namespace SolarWinds.SharedCommunication.RateLimiter
         }
 
         /// <summary>
-        /// task for waiting until there is a next free slot
+        /// A task for waiting until there is a next free slot based on time limit and cancellation token.
         /// </summary>
-        /// <param name="maxAcceptableWaitingTime"> limit of time waiting </param>
-        /// <param name="cancellationToken"> cancellation token </param>
-        /// <returns></returns>
+        /// <param name="maxAcceptableWaitingTime">Limit of time waiting.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         public Task<bool> WaitTillNextFreeSlotAsync(TimeSpan maxAcceptableWaitingTime, CancellationToken cancellationToken = default)
         {
             TimeSpan waitSpan;
@@ -50,10 +49,9 @@ namespace SolarWinds.SharedCommunication.RateLimiter
         }
 
         /// <summary>
-        /// task to sleep until there is next free slot
+        /// A task to sleep until there is next free slot based on time limit.
         /// </summary>
-        /// <param name="maxAcceptableWaitingTime"> limit of time to wait </param>
-        /// <returns></returns>
+        /// <param name="maxAcceptableWaitingTime">Limit of time to wait.</param>
         public bool BlockTillNextFreeSlot(TimeSpan maxAcceptableWaitingTime)
         {
             TimeSpan waitSpan;
@@ -73,7 +71,7 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             SpinWait.SpinUntil(rateLimiterDataAccessor.TryEnterSynchronizedRegion);
         }
 
-        //Depending on version of OS and .NET framework, the granularity of timer and timer events can 1-15ms (15ms being the usual)
+        // Depending on version of OS and .NET framework, the granularity of timer and timer events can 1-15ms (15ms being the usual)
         // this could lead to 'false wake-up' issues during contention (leading to resonated contention)
         private TimeSpan GetRandomSaltSpan()
         {

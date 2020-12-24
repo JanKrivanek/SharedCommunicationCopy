@@ -4,7 +4,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
     /// <summary>
-    /// a class for poller data cache servise
+    /// A class for poller data cache servise.
     /// </summary>
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
         IncludeExceptionDetailInFaults = true,
@@ -18,7 +18,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         { }
 
         /// <summary>
-        /// starts the service
+        /// Starts the service.
         /// </summary>
         public void Start()
         {
@@ -26,7 +26,9 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             service.Open();
         }
 
-        //shuts the service down
+        /// <summary>
+        /// Shuts the service down.
+        /// </summary>
         public void Shutdown()
         {
             service.Close();

@@ -12,7 +12,7 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache
 {
     ///<inheritdoc/>
-    public class SingleProcessDataCache<T> : DelayedDisposalSharedObject<SingleProcessDataCache<T>>, IDataCache<T> //where T : ICacheEntry
+    public class SingleProcessDataCache<T> : DelayedDisposalSharedObject<SingleProcessDataCache<T>>, IDataCache<T>
     {
         //SemaphoreSlim cannot be created from handle - so we need to make sure to create single
         private readonly SemaphoreSlim sp;
@@ -35,13 +35,6 @@ namespace SolarWinds.SharedCommunication.DataCache
         public static IDataCache<T> Create(DataCacheSettings settings, IDateTime dateTime)
         {
             return Create(settings.CacheName, settings.Ttl, dateTime);
-        }
-
-        private SingleProcessDataCache(TimeSpan ttl, IDateTime dateTime)
-        {
-            sp = new SemaphoreSlim(1, 1);
-            this.ttl = ttl;
-            this.dateTime = dateTime;
         }
 
         ///<inheritdoc/>
@@ -95,6 +88,13 @@ namespace SolarWinds.SharedCommunication.DataCache
         protected override void DisposeImpl()
         {
             sp.Dispose();
+        }
+
+        private SingleProcessDataCache(TimeSpan ttl, IDateTime dateTime)
+        {
+            sp = new SemaphoreSlim(1, 1);
+            this.ttl = ttl;
+            this.dateTime = dateTime;
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace SolarWinds.SharedCommunication.Contracts.DataCache
 {
     /// <summary>
-    /// class for string cache entry
+    /// A class for string cache entry.
     /// </summary>
     [DataContract]
     public class StringCacheEntry : CacheEntryBase

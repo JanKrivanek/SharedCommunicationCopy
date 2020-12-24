@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace SolarWinds.SharedCommunication.Utils
 {
     /// <summary>
-    /// class for kernel objects privileges checker
+    /// A class for kernel objects privileges checker.
     /// </summary>
     public class KernelObjectsPrivilegesChecker : IKernelObjectsPrivilegesChecker
     {
@@ -14,11 +14,15 @@ namespace SolarWinds.SharedCommunication.Utils
         public string KernelObjectsPrefix => instance.KernelObjectsPrefix;
         private static IKernelObjectsPrivilegesChecker instance;
 
+        public KernelObjectsPrivilegesChecker(ILogger logger)
+        {
+            GetInstance(logger);
+        }
+
         /// <summary>
-        /// method for getting the instance of the checker
+        /// A method for getting the instance of the checker based on the logger.
         /// </summary>
-        /// <param name="logger"> logger </param>
-        /// <returns></returns>
+        /// <param name="logger"> logger.</param>
         public static IKernelObjectsPrivilegesChecker GetInstance(ILogger logger)
         {
             //no synchro needed here; we're fine with race
@@ -30,13 +34,8 @@ namespace SolarWinds.SharedCommunication.Utils
             return instance;
         }
 
-        public KernelObjectsPrivilegesChecker(ILogger logger)
-        {
-            GetInstance(logger);
-        }
-
         /// <summary>
-        /// class for getting single instance of the privilege checker
+        /// A private class for getting single instance of the privilege checker.
         /// </summary>
         private class KernelObjectsPrivilegesCheckerImpl : IKernelObjectsPrivilegesChecker
         {

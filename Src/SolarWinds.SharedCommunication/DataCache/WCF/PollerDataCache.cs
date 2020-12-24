@@ -7,12 +7,12 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
     /// <summary>
-    /// a class that representd poller data cache
+    /// A class that representd poller data cache.
     /// </summary>
     public class PollerDataCache : IPollerDataCache
     {
         /// <summary>
-        /// a class that represents internal entry
+        /// A class that represents internal entry.
         /// </summary>
         private class InternalEntry
         {
@@ -28,11 +28,10 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             public DateTime InsertedUtc { get; private set; }
 
             /// <summary>
-            /// getr remaining time to live base on explitic time to live
+            /// Gets remaining time to live based on explicit time to live.
             /// </summary>
-            /// <param name="utcNow"> current datetime in UTC </param>
-            /// <param name="explicitTtl"> explicit time to live </param>
-            /// <returns></returns>
+            /// <param name="utcNow">Current datetime in UTC.</param>
+            /// <param name="explicitTtl">Explicit time to live.</param>
             public TimeSpan RemainingTtl(DateTime utcNow, TimeSpan explicitTtl = default)
             {
                 return (explicitTtl != TimeSpan.Zero ? explicitTtl : Ttl) - (utcNow - InsertedUtc);
@@ -48,10 +47,10 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         }
 
         /// <summary>
-        /// gets data cache entry by entry key and ttl
+        /// Gets data cache entry by entry key and TTL.
         /// </summary>
-        /// <param name="entryKey"> entry key</param>
-        /// <param name="ttl"> time to live </param>
+        /// <param name="entryKey">Entry key.</param>
+        /// <param name="ttl">Time to live.</param>
         public SerializedCacheEntry GetDataCacheEntry(string entryKey, TimeSpan ttl = default)
         {
             InternalEntry entry;
@@ -64,11 +63,11 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         }
 
         /// <summary>
-        /// sets data cache entry by entry key, ttl and serialized cache entry
+        /// Sets data cache entry based on entry key, ttl and serialized cache entry.
         /// </summary>
-        /// <param name="entryKey"> entry key </param>
-        /// <param name="ttl"> time to live </param>
-        /// <param name="entry"> serialized cache entry </param>
+        /// <param name="entryKey">Entry key.</param>
+        /// <param name="ttl">Time to live.</param>
+        /// <param name="entry">Serialized cache entry.</param>
         public void SetDataCacheEntry(string entryKey, TimeSpan ttl, SerializedCacheEntry entry)
         {
             if (entry?.SerializedData == null)
@@ -81,6 +80,9 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             cache[entryKey] = ie;
         }
 
+        /// <summary>
+        /// Gets cache size.
+        /// </summary>
         public long GetCacheSize()
         {
             return cache.Values.Sum(v => v.Data.SerializedData.Length);

@@ -6,12 +6,12 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.Utils
 {
     /// <summary>
-    /// a class  for async semaphore
+    /// A class  for async semaphore.
     /// </summary>
     public class AsyncSemaphore : IAsyncSemaphore
     {
         //Semaphore doesn't enforce the ownership - so we can release it from different thread than acquiring
-        // so it's perfect candidate for async wrapping.
+        //so it's perfect candidate for async wrapping.
         //On the other hand it means that when left abandoned acquired (e.g. process crash), it won't get autoreleased
         //So we need to make sureit gets released in all execution paths (including exceptional)
         private readonly Semaphore semaphore;
@@ -27,17 +27,16 @@ namespace SolarWinds.SharedCommunication.Utils
         }
 
         /// <summary>
-        /// wrapper of LockAsync task
+        /// A wrapper of LockAsync task based on cancellation token.
         /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
+        /// <param name="token">Cancellation token.</param>
         public Task WaitAsync(CancellationToken token = default)
         {
             return LockAsync(token);
         }
 
         /// <summary>
-        /// method for releasing the semaphore
+        /// A method for releasing the semaphore.
         /// </summary>
         public void Release()
         {
@@ -45,10 +44,9 @@ namespace SolarWinds.SharedCommunication.Utils
         }
 
         /// <summary>
-        /// task for locking the resource
+        /// A task for locking the resource based on cancellation token.
         /// </summary>
-        /// <param name="token"> cancellation token </param>
-        /// <returns></returns>
+        /// <param name="token">Cancellation token.</param>
         public Task<IDisposable> LockAsync(CancellationToken token = default)
         {
             TaskCompletionSource<IDisposable> tcs = new TaskCompletionSource<IDisposable>();
@@ -90,7 +88,7 @@ namespace SolarWinds.SharedCommunication.Utils
         }
 
         /// <summary>
-        /// class for lock context, wrapped of standard semaphore
+        /// A private class for lock context, wrapping of standard semaphore.
         /// </summary>
         private class LockContext : IDisposable
         {

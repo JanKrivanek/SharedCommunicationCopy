@@ -3,7 +3,7 @@
 namespace SolarWinds.SharedCommunication.Contracts.Utils
 {
     /// <summary>
-    /// interface for platform datetime
+    /// An interface for platform datetime.
     /// </summary>
     public interface IDateTime
     {

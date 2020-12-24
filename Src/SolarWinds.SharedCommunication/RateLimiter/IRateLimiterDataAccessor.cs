@@ -1,7 +1,7 @@
 ﻿namespace SolarWinds.SharedCommunication.RateLimiter
 {
     /// <summary>
-    /// interface for rate limiter data accessor
+    /// An interface for rate limiter data accessor.
     /// </summary>
     public interface IRateLimiterDataAccessor
     {

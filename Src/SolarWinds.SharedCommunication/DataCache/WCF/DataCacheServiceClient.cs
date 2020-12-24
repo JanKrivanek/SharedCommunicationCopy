@@ -21,12 +21,11 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         private readonly DataContractSerializer serializer = new DataContractSerializer(typeof(T));
 
         /// <summary>
-        /// creates a data cache service client based on name, ttl and semaphore factory
+        /// Creates a data cache service client based on name, TTL and semaphore factory.
         /// </summary>
-        /// <param name="cacheName"> name of cache </param>
-        /// <param name="ttl"> time to live </param>
-        /// <param name="semaphoreFactory"> semaphore factory </param>
-        /// <returns></returns>
+        /// <param name="cacheName">Name of cache.</param>
+        /// <param name="ttl">Time to live.</param>
+        /// <param name="semaphoreFactory">Semaphore factory.</param>
         public static DataCacheServiceClient<T> Create(string cacheName, TimeSpan ttl,
             IAsyncSemaphoreFactory semaphoreFactory)
         {
@@ -88,6 +87,17 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             return Task.CompletedTask;
         }
 
+        public void Dispose()
+        {
+            this.Release();
+        }
+
+        protected override void DisposeImpl()
+        {
+            cacheClient.Close();
+            asyncSemaphore.Dispose();
+        }
+
         private T ToData(SerializedCacheEntry entry)
         {
             if (entry?.SerializedData == null) return default;
@@ -104,17 +114,6 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             serializer.WriteObject(ms, data);
             byte[] bytes = ms.ToArray();
             return new SerializedCacheEntry(bytes);
-        }
-
-        public void Dispose()
-        {
-            this.Release();
-        }
-
-        protected override void DisposeImpl()
-        {
-            cacheClient.Close();
-            asyncSemaphore.Dispose();
         }
     }
 }

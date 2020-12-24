@@ -5,26 +5,24 @@ using System.Threading.Tasks;
 namespace SolarWinds.SharedCommunication.Contracts.Utils
 {
     /// <summary>
-    /// interface for AsyncSemaphore
+    /// An interface for AsyncSemaphore.
     /// </summary>
     public interface IAsyncSemaphore : IDisposable
     {
         /// <summary>
-        /// wrapper of LockAsync task
+        /// A wrapper of LockAsync task based on calcellation token.
         /// </summary>
         /// <param name="token"></param>
-        /// <returns></returns>
         Task WaitAsync(CancellationToken token = default);
 
         /// <summary>
-        /// task for locking the resource
+        /// A task for locking the resource based on calcellation token.
         /// </summary>
-        /// <param name="token"> cancellation token </param>
-        /// <returns></returns>
+        /// <param name="token">Cancellation token.</param>
         Task<IDisposable> LockAsync(CancellationToken token = default);
 
         /// <summary>
-        /// method for releasing the semaphore
+        /// A method for releasing the semaphore.
         /// </summary>
         void Release();
     }

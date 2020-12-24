@@ -1,25 +1,23 @@
 ﻿namespace SolarWinds.SharedCommunication.Contracts.Utils
 {
     /// <summary>
-    /// interface for synchronization identifiers provider
+    /// An interface for synchronization identifiers provider.
     /// </summary>
     public interface ISynchronizationIdentifiersProvider
     {
         /// <summary>
-        /// gets synchronization identifier
+        /// Gets synchronization identifier based on API base address, API key and organization identifier.
         /// </summary>
-        /// <param name="apiBaseAddress"> API base address</param>
-        /// <param name="apiKey"> API key </param>
-        /// <param name="orgId"> organization identifier </param>
-        /// <returns></returns>
+        /// <param name="apiBaseAddress">API base address.</param>
+        /// <param name="apiKey">API key.</param>
+        /// <param name="orgId">Organization identifier.</param>
         string GetSynchronizationIdentifier(string apiBaseAddress, string apiKey, string orgId);
 
         /// <summary>
-        /// overloaded method for getting synchronization identifies
+        /// An overloaded method for getting synchronization identifier based on API base address and API key.
         /// </summary>
-        /// <param name="apiBaseAddress"> API base address </param>
-        /// <param name="apiKey"> API key </param>
-        /// <returns></returns>
+        /// <param name="apiBaseAddress">API base address.</param>
+        /// <param name="apiKey">API key.</param>
         string GetSynchronizationIdentifier(string apiBaseAddress, string apiKey);
     }
 }

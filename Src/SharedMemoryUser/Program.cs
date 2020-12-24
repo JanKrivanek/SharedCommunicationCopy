@@ -23,7 +23,7 @@ namespace SharedMemoryUser
             return;
         }
 
-        static void WcfConsumerCacheTest()
+        private static void WcfConsumerCacheTest()
         {
             WcfConsumer.Run();
         }

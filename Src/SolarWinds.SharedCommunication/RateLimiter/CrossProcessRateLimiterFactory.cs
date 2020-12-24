@@ -4,8 +4,8 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
-    /// <summary>
-    /// a class for cross process rate limiter factory
+    /// <summary>.
+    /// A class for cross process rate limiter factory
     /// </summary>
     public class CrossProcessRateLimiterFactory: ICrossProcessRateLimiterFactory
     {
@@ -19,12 +19,11 @@ namespace SolarWinds.SharedCommunication.RateLimiter
         }
 
         /// <summary>
-        /// opens or creats a rate limiter shared memory accessor
+        /// Opens or creats a rate limiter shared memory accessor based on string identifier, time span and accessor capacity.
         /// </summary>
-        /// <param name="identifier"> id of the accessor </param>
-        /// <param name="measureTime"> time parameter to get span ticks for the accessor </param>
-        /// <param name="maxOccurencesPerTime"> capacity of the accessor</param>
-        /// <returns></returns>
+        /// <param name="identifier">Id of the accessor.</param>
+        /// <param name="measureTime">Time parameter to get span ticks for the accessor.</param>
+        /// <param name="maxOccurencesPerTime">Capacity of the accessor.</param>
         public IRateLimiter OpenOrCreate(string identifier, TimeSpan measureTime, int maxOccurencesPerTime)
         {
             RateLimiterSharedMemoryAccessor accesor =

@@ -3,7 +3,7 @@
 namespace SolarWinds.SharedCommunication.Contracts.DataCache
 {
     /// <summary>
-    /// interface for cache directory
+    /// An interface for cache directory.
     /// </summary>
     public interface IDataCacheFactory
     {
