@@ -19,8 +19,7 @@ namespace SolarWinds.SharedCommunication.Tests.RateLimiter
         {
             dateTime = new Mock<IDateTime>();
             privilegesChecker = new Mock<IKernelObjectsPrivilegesChecker>();
-            crossProcessRateLimiterFactory =
-                new CrossProcessRateLimiterFactory(dateTime.Object, privilegesChecker.Object);
+            crossProcessRateLimiterFactory = new CrossProcessRateLimiterFactory(dateTime.Object, privilegesChecker.Object);
         }
 
         [Test]
@@ -31,11 +30,9 @@ namespace SolarWinds.SharedCommunication.Tests.RateLimiter
             var measureTime = new TimeSpan(0, 2, 0);
             const int maxOccurencesPerTime = 1;
             const string kernelObjectsPrefixTest = "Global\\";
-            privilegesChecker.Setup(k => k.KernelObjectsPrefix)
-                .Returns(kernelObjectsPrefixTest);
+            privilegesChecker.Setup(k => k.KernelObjectsPrefix).Returns(kernelObjectsPrefixTest);
             //Act
-            var result =
-                crossProcessRateLimiterFactory.OpenOrCreate(identifier, measureTime, maxOccurencesPerTime);
+            var result = crossProcessRateLimiterFactory.OpenOrCreate(identifier, measureTime, maxOccurencesPerTime);
             //Assert
             privilegesChecker.Verify(k => k.KernelObjectsPrefix, Times.Once);
             result.Should().NotBeNull();
