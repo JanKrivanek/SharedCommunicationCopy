@@ -56,7 +56,7 @@ namespace SolarWinds.SharedCommunication.Tests.RateLimiter
             rateLimiterDataAccessor.Setup(r => r.OldestTimestampTicks).Returns(oldestTimestamp.Ticks);
             ringMemoryBufferRateLimiter = new RingMemoryBufferRateLimiter(rateLimiterDataAccessor.Object, dateTime.Object);
             var maxAcceptableWaitingTime = new TimeSpan(0, 0, 1);
-            rateLimiterDataAccessor.Setup(r => r.TryEnterSynchronizedRegion()).Returns(false);
+            rateLimiterDataAccessor.Setup(r => r.TryEnterSynchronizedRegion()).Returns(true);
             //Act
             var result = await ringMemoryBufferRateLimiter.WaitTillNextFreeSlotAsync(maxAcceptableWaitingTime);
             //Assert
@@ -66,6 +66,33 @@ namespace SolarWinds.SharedCommunication.Tests.RateLimiter
             rateLimiterDataAccessor.Verify(r => r.OldestTimestampTicks, Times.Once);
             rateLimiterDataAccessor.Verify(r => r.TryEnterSynchronizedRegion(), Times.AtLeastOnce);
             rateLimiterDataAccessor.Verify(r => r.ExitSynchronizedRegion(), Times.Once);
+            result.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task WaitTillNextFreeSlotAsync_WithTryEnterSynchronizedRegionFailed_ReturnsFalse()
+        {
+            //Arrange
+            var timeShift = new TimeSpan(2, 0, 0, 0);
+            var oldestTimestamp = DateTime.UtcNow - timeShift;
+            const int capacity = 1;
+            const int size = 1;
+            rateLimiterDataAccessor.Setup(r => r.Capacity).Returns(capacity);
+            rateLimiterDataAccessor.Setup(r => r.Size).Returns(size);
+            rateLimiterDataAccessor.Setup(r => r.SpanTicks).Returns(DateTime.UtcNow.Ticks);
+            rateLimiterDataAccessor.Setup(r => r.OldestTimestampTicks).Returns(oldestTimestamp.Ticks);
+            ringMemoryBufferRateLimiter = new RingMemoryBufferRateLimiter(rateLimiterDataAccessor.Object, dateTime.Object);
+            var maxAcceptableWaitingTime = new TimeSpan(0, 0, 1);
+            rateLimiterDataAccessor.Setup(r => r.TryEnterSynchronizedRegion()).Returns(false);
+            //Act
+            var result = await ringMemoryBufferRateLimiter.WaitTillNextFreeSlotAsync(maxAcceptableWaitingTime);
+            //Assert
+            rateLimiterDataAccessor.Verify(r => r.Capacity, Times.Exactly(2));
+            rateLimiterDataAccessor.Verify(r => r.SpanTicks, Times.Exactly(2));
+            rateLimiterDataAccessor.Verify(r => r.TryEnterSynchronizedRegion(), Times.AtLeastOnce);
+            rateLimiterDataAccessor.Verify(r => r.Size, Times.Never);
+            rateLimiterDataAccessor.Verify(r => r.OldestTimestampTicks, Times.Never);
+            rateLimiterDataAccessor.Verify(r => r.ExitSynchronizedRegion(), Times.Never);
             result.Should().BeFalse();
         }
 
@@ -97,7 +124,7 @@ namespace SolarWinds.SharedCommunication.Tests.RateLimiter
             rateLimiterDataAccessor.Setup(r => r.OldestTimestampTicks).Returns(oldestTimestamp.Ticks);
             ringMemoryBufferRateLimiter = new RingMemoryBufferRateLimiter(rateLimiterDataAccessor.Object, dateTime.Object);
             var maxAcceptableWaitingTime = new TimeSpan(0, 0, 1);
-            rateLimiterDataAccessor.Setup(r => r.TryEnterSynchronizedRegion()).Returns(false);
+            rateLimiterDataAccessor.Setup(r => r.TryEnterSynchronizedRegion()).Returns(true);
             //Act
             var result = ringMemoryBufferRateLimiter.BlockTillNextFreeSlot(maxAcceptableWaitingTime);
             //Assert
@@ -107,6 +134,33 @@ namespace SolarWinds.SharedCommunication.Tests.RateLimiter
             rateLimiterDataAccessor.Verify(r => r.OldestTimestampTicks, Times.Once);
             rateLimiterDataAccessor.Verify(r => r.TryEnterSynchronizedRegion(), Times.AtLeastOnce);
             rateLimiterDataAccessor.Verify(r => r.ExitSynchronizedRegion(), Times.Once);
+            result.Should().BeFalse();
+        }
+
+        [Test]
+        public void BlockTillNextFreeSlot_WithTryEnterSynchronizedRegionFailed_ReturnsFalse()
+        {
+            //Arrange
+            var timeShift = new TimeSpan(2, 0, 0, 0);
+            var oldestTimestamp = DateTime.UtcNow - timeShift;
+            const int capacity = 1;
+            const int size = 1;
+            rateLimiterDataAccessor.Setup(r => r.Capacity).Returns(capacity);
+            rateLimiterDataAccessor.Setup(r => r.Size).Returns(size);
+            rateLimiterDataAccessor.Setup(r => r.SpanTicks).Returns(DateTime.UtcNow.Ticks);
+            rateLimiterDataAccessor.Setup(r => r.OldestTimestampTicks).Returns(oldestTimestamp.Ticks);
+            ringMemoryBufferRateLimiter = new RingMemoryBufferRateLimiter(rateLimiterDataAccessor.Object, dateTime.Object);
+            var maxAcceptableWaitingTime = new TimeSpan(0, 0, 1);
+            rateLimiterDataAccessor.Setup(r => r.TryEnterSynchronizedRegion()).Returns(false);
+            //Act
+            var result = ringMemoryBufferRateLimiter.BlockTillNextFreeSlot(maxAcceptableWaitingTime);
+            //Assert
+            rateLimiterDataAccessor.Verify(r => r.Capacity, Times.Exactly(2));
+            rateLimiterDataAccessor.Verify(r => r.SpanTicks, Times.Exactly(2));
+            rateLimiterDataAccessor.Verify(r => r.TryEnterSynchronizedRegion(), Times.AtLeastOnce);
+            rateLimiterDataAccessor.Verify(r => r.Size, Times.Never);
+            rateLimiterDataAccessor.Verify(r => r.OldestTimestampTicks, Times.Never);
+            rateLimiterDataAccessor.Verify(r => r.ExitSynchronizedRegion(), Times.Never);
             result.Should().BeFalse();
         }
     }

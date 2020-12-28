@@ -24,9 +24,9 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             _rateLimiterSpan = new TimeSpan(_rateLimiterDataAccessor.SpanTicks);
         }
 
-        private void EnterSynchronization(TimeSpan maxAcceptableWaitingTime)
+        private bool EnterSynchronization(TimeSpan maxAcceptableWaitingTime)
         {
-            SpinWait.SpinUntil(_rateLimiterDataAccessor.TryEnterSynchronizedRegion, maxAcceptableWaitingTime);
+            return SpinWait.SpinUntil(_rateLimiterDataAccessor.TryEnterSynchronizedRegion, maxAcceptableWaitingTime);
         }
 
         //Depending on version of OS and .NET framework, the granularity of timer and timer events can 1-15ms (15ms being the usual)
@@ -40,10 +40,15 @@ namespace SolarWinds.SharedCommunication.RateLimiter
         {
             DateTime utcNow;
             waitSpan = TimeSpan.Zero;
-            bool isAcceptable = true;
+            bool isAcceptable;
+
+            if (!EnterSynchronization(maxAcceptableWaitingTime))
+            {
+                return false;
+            }
+
             try
             {
-                EnterSynchronization(maxAcceptableWaitingTime);
                 utcNow = _dateTime.UtcNow;
                 bool isFull = _rateLimiterDataAccessor.Size == _rateLimiterCapacity;
 

@@ -32,13 +32,34 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
             const string apiBaseAddress = "net.tcp://localhost:17777/SolarWinds/PollerCache";
             const string apiKey = "123";
             const string orgId = "5";
-            const string expectedResult = "OH6GkFGoxY2Q+yyXlr2CdYxd3vEnFsmrJP87gO5wehs=";
             //Act
-            var result =
+            var result1 =
+                synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
+            var result2 =
                 synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
             //Assert
-            result.Should().NotBeNullOrEmpty();
-            result.Should().Be(expectedResult);
+            result1.Should().NotBeNullOrEmpty();
+            result2.Should().NotBeNullOrEmpty();
+            result1.Should().Be(result2);
+        }
+
+        [Test]
+        public void GetSynchronizationIdentifier_WithValidArguments_ReturnsDifferentIdentifiers()
+        {
+            //Arrange
+            const string apiBaseAddress = "net.tcp://localhost:17777/SolarWinds/PollerCache";
+            const string apiKey1 = "123";
+            const string apiKey2 = "124";
+            const string orgId = "5";
+            //Act
+            var result1 =
+                synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey1, orgId);
+            var result2 =
+                synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey2, orgId);
+            //Assert
+            result1.Should().NotBeNullOrEmpty();
+            result2.Should().NotBeNullOrEmpty();
+            result1.Should().NotBe(result2);
         }
     }
 }
