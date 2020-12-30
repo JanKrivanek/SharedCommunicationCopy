@@ -40,23 +40,14 @@ namespace SolarWinds.SharedCommunication.Tests
             sharedMemoryDataCache = new SharedMemoryDataCache<CacheEntryBase>(cacheName, ttl, dateTime.Object, asyncSemaphoreFactory, privilegesChecker.Object);
         }
 
+        //only checks if the method doesn't crash as we have new in constructor and it is impossible to mock that
         [Test]
-        public async Task GetDataAsync_WithValidArguments_ReturnsTask()
+        public async Task GetDataAsync_WithValidArguments_RunsSuccessfully()
         {
             var asyncDataFactory = Task.FromResult(new StringCacheEntry("cache1") as CacheEntryBase);
             var token = new CancellationToken();
             var result = await this.sharedMemoryDataCache.GetDataAsync(() => asyncDataFactory, token);
             result.Should().BeNull();
         }
-
-        //[Test]
-        //public async Task SetDataAsync_WithValidArguments_ReturnsTask()
-        //{
-        //    var asyncDataFactory = Task.FromResult(new StringCacheEntry("cache1") as CacheEntryBase);
-        //    var token = new CancellationToken();
-        //    await sharedMemoryDataCache.SetDataAsync(new StringCacheEntry("cache1"), token);
-        //    var result = await this.sharedMemoryDataCache.GetDataAsync(() => asyncDataFactory, token);
-        //    result.Should().NotBeNull();
-        //}
     }
 }

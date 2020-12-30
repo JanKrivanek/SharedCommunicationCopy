@@ -16,10 +16,6 @@ namespace SolarWinds.SharedCommunication.Tests
 {
     public class SharedMemorySegmentTest
     {
-       // private Mock<MemoryMappedFile> mmf;
-       // private Mock<MemoryMappedViewAccessor> memoryAccessor;
-        //private Mock<MemoryMappedFile> contentMmf;
-        //private Mock<MemoryMappedViewStream> contentMemoryStream;
         private string segmentName;
         private Mock<IKernelObjectsPrivilegesChecker> privilegesChecker;
         private SharedMemorySegment sharedMemorySegment;
@@ -29,19 +25,13 @@ namespace SolarWinds.SharedCommunication.Tests
         {
             segmentName = "testSegment";
             privilegesChecker = new Mock<IKernelObjectsPrivilegesChecker>();
-          //  memoryAccessor = new Mock<MemoryMappedViewAccessor>();
-
             sharedMemorySegment = new SharedMemorySegment(segmentName, privilegesChecker.Object);
         }
 
         [Test]
         public void ReadBytes_ReturnBytes()
         {
-           // memoryAccessor.Setup(m => m.ReadInt64(sizeof(long))).Returns(10);
-           // memoryAccessor.Setup(m => m.ReadArray(3 * sizeof(long), new byte[16], 0, 16)).Returns(25);
-
             var result = sharedMemorySegment.ReadBytes();
-
             result.Should().NotBeNull();
         }
     }
