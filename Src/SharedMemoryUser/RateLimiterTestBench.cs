@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using SolarWinds.SharedCommunication.Contracts.RateLimiter;
-using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using SolarWinds.Logging;
 using SolarWinds.SharedCommunication.Utils;
 
 namespace SolarWinds.SharedCommunication.RateLimiter
@@ -32,7 +23,6 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             CrossProcessRateLimiterFactory f = new CrossProcessRateLimiterFactory(new PlatformDateTime(),
                 new KernelObjectsPrivilegesChecker(logger));
 
-
             int workersCount = 8;
             Parallel.For(1, workersCount + 1, workerId =>
             {
@@ -40,7 +30,6 @@ namespace SolarWinds.SharedCommunication.RateLimiter
                 for (int callId = 0; callId < 20; callId++)
                 {
                     Console.WriteLine($"{DateTime.UtcNow.ToString("dd-MM-ss.fffffff")} worker [{workerId}] starting call {callId}");
-                    //bool canRun = await limiter.WaitTillNextFreeSlotAsync(TimeSpan.FromSeconds(10));
                     bool canRun = limiter.BlockTillNextFreeSlot(TimeSpan.FromSeconds(10));
                     Console.WriteLine($"{DateTime.UtcNow.ToString("dd-MM-ss.fffffff")} worker [{workerId}] finished call {callId}. Success: {canRun}");
                 }

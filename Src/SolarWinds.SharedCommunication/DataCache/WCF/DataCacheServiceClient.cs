@@ -9,16 +9,23 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
     ///<inheritdoc/>
-    internal class DataCacheServiceClient<T> : DelayedDisposalSharedObject<DataCacheServiceClient<T>>, IDataCache<T> //where T : ICacheEntry
+    internal class DataCacheServiceClient<T> : DelayedDisposalSharedObject<DataCacheServiceClient<T>>, IDataCache<T>
     {
-        private readonly PollerDataCacheClient _cacheClient = new PollerDataCacheClient();
+        private readonly PollerDataCacheClient cacheClient = new PollerDataCacheClient();
+
         //TODO: this must be done differently - different types have different ttl (e.g. topology has longer polling interval)
         // ttl can change during runtime. We might need to expose it through the individual calls
-        private readonly TimeSpan _ttl;
-        private readonly IAsyncSemaphore _asyncSemaphore;
-        private readonly string _key;
-        private readonly DataContractSerializer _serializer = new DataContractSerializer(typeof(T));
+        private readonly TimeSpan ttl;
+        private readonly IAsyncSemaphore asyncSemaphore;
+        private readonly string key;
+        private readonly DataContractSerializer serializer = new DataContractSerializer(typeof(T));
 
+        /// <summary>
+        /// Creates a data cache service client based on name, TTL and semaphore factory.
+        /// </summary>
+        /// <param name="cacheName">Name of cache.</param>
+        /// <param name="ttl">Time to live.</param>
+        /// <param name="semaphoreFactory">Semaphore factory.</param>
         public static DataCacheServiceClient<T> Create(string cacheName, TimeSpan ttl,
             IAsyncSemaphoreFactory semaphoreFactory)
         {
@@ -27,18 +34,17 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
 
         private DataCacheServiceClient(string cacheName, TimeSpan ttl, IAsyncSemaphoreFactory semaphoreFactory)
         {
-            _ttl = ttl;
-            _asyncSemaphore = semaphoreFactory.Create(cacheName + "_MTX");
-            _key = cacheName;
+            this.ttl = ttl;
+            asyncSemaphore = semaphoreFactory.Create(cacheName + "_MTX");
+            key = cacheName;
         }
-
         
         ///<inheritdoc/>
         public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
-            using (await _asyncSemaphore.LockAsync(token).ConfigureAwait(false))
+            using (await asyncSemaphore.LockAsync(token).ConfigureAwait(false))
             {
-                SerializedCacheEntry entry = _cacheClient.GetDataCacheEntry(_key, _ttl);
+                SerializedCacheEntry entry = cacheClient.GetDataCacheEntry(key, ttl);
 
                 bool hasData = entry != null;
                 T data;
@@ -51,7 +57,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
                     token.ThrowIfCancellationRequested();
                     data = await asyncDataFactory().ConfigureAwait(false);
                     entry = FromData(data);
-                    _cacheClient.SetDataCacheEntry(_key, _ttl, entry);
+                    cacheClient.SetDataCacheEntry(key, ttl, entry);
                 }
 
                 return data;
@@ -62,7 +68,7 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         public void EraseData()
         {
             //no need to synchronize - the server side concurrent dict will take care about serializing access
-            _cacheClient.SetDataCacheEntry(_key, _ttl, null);
+            cacheClient.SetDataCacheEntry(key, ttl, null);
         }
 
         ///<inheritdoc/>
@@ -75,10 +81,21 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
             else
             {
                 //no need to synchronize - the server side concurrent dict will take care about serializing access
-                _cacheClient.SetDataCacheEntry(_key, _ttl, FromData(data));
+                cacheClient.SetDataCacheEntry(key, ttl, FromData(data));
             }
 
             return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            this.Release();
+        }
+
+        protected override void DisposeImpl()
+        {
+            cacheClient.Close();
+            asyncSemaphore.Dispose();
         }
 
         private T ToData(SerializedCacheEntry entry)
@@ -94,20 +111,9 @@ namespace SolarWinds.SharedCommunication.DataCache.WCF
         private SerializedCacheEntry FromData(T data)
         {
             MemoryStream ms = new MemoryStream();
-            _serializer.WriteObject(ms, data);
+            serializer.WriteObject(ms, data);
             byte[] bytes = ms.ToArray();
             return new SerializedCacheEntry(bytes);
-        }
-
-        public void Dispose()
-        {
-            this.Release();
-        }
-
-        protected override void DisposeImpl()
-        {
-            _cacheClient.Close();
-            _asyncSemaphore.Dispose();
         }
     }
 }

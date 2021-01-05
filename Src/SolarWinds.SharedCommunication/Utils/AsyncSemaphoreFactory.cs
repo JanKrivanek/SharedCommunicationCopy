@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace SolarWinds.SharedCommunication.Utils
 {
+    /// <summary>
+    /// A class for async semaphore factory.
+    /// </summary>
     public class AsyncSemaphoreFactory : IAsyncSemaphoreFactory
     {
         private readonly ILogger _logger;
@@ -15,11 +18,20 @@ namespace SolarWinds.SharedCommunication.Utils
             _logger = logger;
         }
 
+        /// <summary>
+        /// A method for creating the async semaphore based on semaphore name.
+        /// </summary>
+        /// <param name="name">Semaphore name.</param>
         public IAsyncSemaphore Create(string name)
         {
             return this.Create(name, KernelObjectsPrivilegesChecker.GetInstance(_logger));
         }
 
+        /// <summary>
+        /// A method for creating the async semaphore based on name and kernel object privileges checker.
+        /// </summary>
+        /// <param name="name">Semaphore name.</param>
+        /// <param name="kernelObjectsPrivilegesChecker">Privileges checker.</param>
         public IAsyncSemaphore Create(string name, IKernelObjectsPrivilegesChecker kernelObjectsPrivilegesChecker)
         {
             var allowEveryoneRule = new SemaphoreAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),

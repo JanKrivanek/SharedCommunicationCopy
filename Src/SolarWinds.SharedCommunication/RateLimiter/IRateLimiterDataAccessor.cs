@@ -1,5 +1,8 @@
 ﻿namespace SolarWinds.SharedCommunication.RateLimiter
 {
+    /// <summary>
+    /// An interface for rate limiter data accessor.
+    /// </summary>
     public interface IRateLimiterDataAccessor
     {
         bool TryEnterSynchronizedRegion();
@@ -9,6 +12,5 @@
         long SpanTicks { get; }
         long OldestTimestampTicks { get; }
         long CurrentTimestampTicks { get; set; }
-
     }
 }
