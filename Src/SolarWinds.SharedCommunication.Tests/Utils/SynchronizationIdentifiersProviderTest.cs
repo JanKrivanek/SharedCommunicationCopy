@@ -22,7 +22,7 @@ namespace SolarWinds.SharedCommunication.Tests.Utils
             Action action = () =>
                 synchronizationIdentifiersProvider.GetSynchronizationIdentifier(apiBaseAddress, apiKey, orgId);
             //Assert
-            action.ShouldThrow<ArgumentException>();
+            action.Should().Throw<ArgumentException>();
         }
 
         [Test]
