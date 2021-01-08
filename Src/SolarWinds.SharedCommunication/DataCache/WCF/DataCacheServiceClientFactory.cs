@@ -4,21 +4,27 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
-    public class DataCacheServiceClientFactory<T> //where T : CacheEntryBase
+    /// <summary>
+    /// Factory for creating data cache service clients.
+    /// </summary>
+    public class DataCacheServiceClientFactory<T> 
     {
-        private readonly PollerDataCacheClient _cacheClient = new PollerDataCacheClient();
-        private readonly IAsyncSemaphoreFactory _semaphoreFactory;
+        private readonly IAsyncSemaphoreFactory semaphoreFactory;
 
         public DataCacheServiceClientFactory(IAsyncSemaphoreFactory semaphoreFactory)
         {
-            _semaphoreFactory = semaphoreFactory;
+            this.semaphoreFactory = semaphoreFactory;
         }
 
-        //optionaly we can change ttl to be per cache call
+        /// <summary>
+        /// Creates a cache based on name and ttl. Optionally we can change ttl to be per cache call.
+        /// </summary>
+        /// <param name="cacheName">Cache name.</param>
+        /// <param name="ttl">Time to live.</param>
+        /// <returns>Data cache service client.</returns>
         public IDataCache<T> CreateCache(string cacheName, TimeSpan ttl)
         {
-            var asyncSemaphore = _semaphoreFactory.Create(cacheName + "_MTX");
-            return DataCacheServiceClient<T>.Create(cacheName, ttl, _semaphoreFactory);
+            return DataCacheServiceClient<T>.Create(cacheName, ttl, semaphoreFactory);
         }
     }
 }

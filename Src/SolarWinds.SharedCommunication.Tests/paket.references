@@ -1,4 +1,5 @@
-NUnit
-NUnit3TestAdapter
-Moq
-FluentAssertions
+group 3rdParty
+    NUnit
+    NUnit3TestAdapter
+    Moq
+    FluentAssertions

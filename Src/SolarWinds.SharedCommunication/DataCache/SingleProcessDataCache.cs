@@ -12,16 +12,15 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 namespace SolarWinds.SharedCommunication.DataCache
 {
     ///<inheritdoc/>
-    public class SingleProcessDataCache<T> : DelayedDisposalSharedObject<SingleProcessDataCache<T>>, IDataCache<T> //where T : ICacheEntry
+    public class SingleProcessDataCache<T> : DelayedDisposalSharedObject<SingleProcessDataCache<T>>, IDataCache<T>
     {
         //SemaphoreSlim cannot be created from handle - so we need to make sure to create single
-        private static ConcurrentDictionary<string, IDataCache<T>> _instances = new ConcurrentDictionary<string, IDataCache<T>>();
-        private readonly SemaphoreSlim _sp;
-        private readonly TimeSpan _ttl;
-        private readonly IDateTime _dateTime;
+        private readonly SemaphoreSlim sp;
+        private readonly TimeSpan ttl;
+        private readonly IDateTime dateTime;
 
-        private T _data;
-        private DateTime _lastChangedUtc;
+        private T data;
+        private DateTime lastChangedUtc;
 
         public static IDataCache<T> Create(string cacheName, TimeSpan ttl, IDateTime dateTime)
         {
@@ -38,40 +37,33 @@ namespace SolarWinds.SharedCommunication.DataCache
             return Create(settings.CacheName, settings.Ttl, dateTime);
         }
 
-        private SingleProcessDataCache(TimeSpan ttl, IDateTime dateTime)
-        {
-            _sp = new SemaphoreSlim(1, 1);
-            _ttl = ttl;
-            _dateTime = dateTime;
-        }
-
         ///<inheritdoc/>
         public async Task<T> GetDataAsync(Func<Task<T>> asyncDataFactory, CancellationToken token = default)
         {
-            await _sp.WaitAsync(token);
+            await sp.WaitAsync(token);
             //on cancellation exception would be thrown and we won't get here
             try
             {
-                bool hasData = _lastChangedUtc >= _dateTime.UtcNow - _ttl;
+                bool hasData = lastChangedUtc >= dateTime.UtcNow - ttl;
                 if (!hasData)
                 {
-                    _data = await asyncDataFactory().ConfigureAwait(false);
-                    _lastChangedUtc = _dateTime.UtcNow;
+                    data = await asyncDataFactory().ConfigureAwait(false);
+                    lastChangedUtc = dateTime.UtcNow;
                 }
 
-                return _data;
+                return data;
             }
             finally
             {
-                _sp.Release();
+                sp.Release();
             }
         }
 
         ///<inheritdoc/>
         public void EraseData()
         {
-            _lastChangedUtc = DateTime.MinValue;
-            _data = default(T);
+            lastChangedUtc = DateTime.MinValue;
+            data = default(T);
         }
 
         ///<inheritdoc/>
@@ -81,8 +73,8 @@ namespace SolarWinds.SharedCommunication.DataCache
             // the time flag and data writes cannot be reordered (again - thanks to .net memory model), so in a worst case
             // we can happen to have race of 2 writes where data is from one write and timestamp from other - but since it was race,
             // the timestamps will be very close together - so no harm in mixing two
-            _data = data;
-            _lastChangedUtc = _dateTime.UtcNow;
+            this.data = data;
+            lastChangedUtc = dateTime.UtcNow;
 
             return Task.CompletedTask;
         }
@@ -95,7 +87,14 @@ namespace SolarWinds.SharedCommunication.DataCache
 
         protected override void DisposeImpl()
         {
-            _sp.Dispose();
+            sp.Dispose();
+        }
+
+        private SingleProcessDataCache(TimeSpan ttl, IDateTime dateTime)
+        {
+            sp = new SemaphoreSlim(1, 1);
+            this.ttl = ttl;
+            this.dateTime = dateTime;
         }
     }
 }

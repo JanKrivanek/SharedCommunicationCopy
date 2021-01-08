@@ -3,26 +3,35 @@ using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.DataCache.WCF
 {
+    /// <summary>
+    /// A class for poller data cache servise.
+    /// </summary>
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
         IncludeExceptionDetailInFaults = true,
         AutomaticSessionShutdown = true,
         ConcurrencyMode = ConcurrencyMode.Multiple)]
-    public class PollerDataCacheService : PollerDataCacheImpl
+    public class PollerDataCacheService : PollerDataCache
     {
-        private ServiceHost _service;
+        private ServiceHost service;
 
         public PollerDataCacheService(IDateTime dateTime) : base(dateTime)
         { }
 
+        /// <summary>
+        /// Starts the service.
+        /// </summary>
         public void Start()
         {
-            _service = new ServiceHost(this);
-            _service.Open();
+            service = new ServiceHost(this);
+            service.Open();
         }
 
+        /// <summary>
+        /// Shuts the service down.
+        /// </summary>
         public void Shutdown()
         {
-            _service.Close();
+            service.Close();
         }
     }
 }

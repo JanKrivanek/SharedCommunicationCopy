@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>$(FullFrameworkVersion)</TargetFramework>
     <OutputType>Exe</OutputType>
     <WarningsNotAsErrors>1998,1591,4014</WarningsNotAsErrors>
   </PropertyGroup>

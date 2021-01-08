@@ -4,28 +4,61 @@ using System.IO.MemoryMappedFiles;
 using System.Security.AccessControl;
 using System.Threading;
 using SolarWinds.SharedCommunication.Contracts.Utils;
-using SolarWinds.SharedCommunication.Utils;
 
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
+    /// <summary>
+    /// A class for rate limiter shared memory accessor.
+    /// </summary>
     internal class RateLimiterSharedMemoryAccessor : IRateLimiterDataAccessor
     {
-        private const long _INTERLOCK_LATCH_OFFSET = 0;
+        private const long interlockLatchOffset = 0;
 
         //padding for rest of long
-        private const long _CAPACITY_OFFSET = _INTERLOCK_LATCH_OFFSET + sizeof(long);
-        private const long _SPAN_OFFSET = _CAPACITY_OFFSET + sizeof(long);
-        private const long _SIZE_OFFSET = _SPAN_OFFSET + sizeof(long);
-        private const long _CURRENT_IDX_OFFSET = _SIZE_OFFSET + sizeof(long);
-        private const long _CONTENT_ADDRESS_OFFSET = _CURRENT_IDX_OFFSET + sizeof(long);
+        private const long capacityOffset = interlockLatchOffset + sizeof(long);
+        private const long spanOffset = capacityOffset + sizeof(long);
+        private const long sizeOffset = spanOffset + sizeof(long);
+        private const long currentIdxOffset = sizeOffset + sizeof(long);
+        private const long contentAddressOffset = currentIdxOffset + sizeof(long);
+        private const int lockTaken = 1;
+        private const int lockFree = 0;
 
         //need to GC root this as view accessor doesn't take full ownership
-        private readonly MemoryMappedFile _mmf;
-        private readonly MemoryMappedViewAccessor _memoryAccessor;
-        private readonly MemoryMappedViewAccessor _ringBuffermemoryAccessor;
+        private readonly MemoryMappedFile mmf;
+        private readonly MemoryMappedViewAccessor memoryAccessor;
+        private readonly MemoryMappedViewAccessor ringBuffermemoryAccessor;
 
         //we need the raw pointer for CAS operations
-        private readonly IntPtr _latchAddress;
+        private readonly IntPtr latchAddress;
+
+        public int Capacity { get; }
+        public int Size
+        {
+            get => memoryAccessor.ReadInt32(sizeOffset);
+            set => memoryAccessor.Write(sizeOffset, value >= Capacity ? Capacity : value);
+        }
+
+        public long SpanTicks { get; }
+
+        public long CurrentTimestampTicks
+        {
+            get => ringBuffermemoryAccessor.ReadInt64(GetWrapIndex(CurrentIndex - 1) * sizeof(long));
+
+            set
+            {
+                ringBuffermemoryAccessor.Write(CurrentIndex * sizeof(long), value);
+
+                //properties handle wrapping appropriately
+                Size++;
+                CurrentIndex++;
+            }
+        }
+
+        private int CurrentIndex
+        {
+            get => memoryAccessor.ReadInt32(currentIdxOffset);
+            set => memoryAccessor.Write(currentIdxOffset, GetWrapIndex(value));
+        }
 
         public RateLimiterSharedMemoryAccessor(
             string segmentName, 
@@ -43,19 +76,19 @@ namespace SolarWinds.SharedCommunication.RateLimiter
                 "everyone",
                 MemoryMappedFileRights.ReadWrite,
                 AccessControlType.Allow));
-            _mmf = MemoryMappedFile.CreateOrOpen(segmentName, _CONTENT_ADDRESS_OFFSET + capacity,
+            mmf = MemoryMappedFile.CreateOrOpen(segmentName, contentAddressOffset + capacity,
                 MemoryMappedFileAccess.ReadWrite,
                 MemoryMappedFileOptions.None, security, HandleInheritability.None);
 
-            _memoryAccessor = _mmf.CreateViewAccessor(_INTERLOCK_LATCH_OFFSET, _CONTENT_ADDRESS_OFFSET);
+            memoryAccessor = mmf.CreateViewAccessor(interlockLatchOffset, contentAddressOffset);
 
-            Capacity = (int)_memoryAccessor.ReadInt64(_CAPACITY_OFFSET);
-            SpanTicks = _memoryAccessor.ReadInt64(_SPAN_OFFSET);
+            Capacity = (int)memoryAccessor.ReadInt64(capacityOffset);
+            SpanTicks = memoryAccessor.ReadInt64(spanOffset);
 
             if (Capacity == 0 && SpanTicks == 0)
             {
-                _memoryAccessor.Write(_CAPACITY_OFFSET, (long)capacity);
-                _memoryAccessor.Write(_SPAN_OFFSET, spanTicks);
+                memoryAccessor.Write(capacityOffset, (long)capacity);
+                memoryAccessor.Write(spanOffset, spanTicks);
                 Capacity = capacity;
                 SpanTicks = spanTicks;
             }
@@ -65,33 +98,33 @@ namespace SolarWinds.SharedCommunication.RateLimiter
                     $"Mismatch during RateLimiterSharedMemoryAccessor creation. [{segmentName}] had capacity set to {Capacity} and SpanTicks to {SpanTicks}, while caller requested {capacity}, {spanTicks}");
             }
 
-            _ringBuffermemoryAccessor = _mmf.CreateViewAccessor(_CONTENT_ADDRESS_OFFSET, capacity * sizeof(long));
+            ringBuffermemoryAccessor = mmf.CreateViewAccessor(contentAddressOffset, capacity * sizeof(long));
 
             //this points to start of MMF, not the view! (in our same luckily the same as offset is )
-            _latchAddress = _memoryAccessor.SafeMemoryMappedViewHandle.DangerousGetHandle();
+            latchAddress = memoryAccessor.SafeMemoryMappedViewHandle.DangerousGetHandle();
         }
 
-        private const int _LOCK_TAKEN = 1;
-        private const int _LOCK_FREE = 0;
-
+        /// <summary>
+        /// Tries if the synchronized region is lock free.
+        /// </summary>
         public unsafe bool TryEnterSynchronizedRegion()
         {
-            return Interlocked.CompareExchange(ref (*((int*)(_latchAddress))), _LOCK_TAKEN, _LOCK_FREE) == _LOCK_FREE;
+            return Interlocked.CompareExchange(ref (*((int*)(latchAddress))), lockTaken, lockFree) == lockFree;
         }
 
+        /// <summary>
+        /// Exits the synchronized region.
+        /// </summary>
         public void ExitSynchronizedRegion()
         {
-            _memoryAccessor.Write(_INTERLOCK_LATCH_OFFSET, (int)0);
+            memoryAccessor.Write(interlockLatchOffset, (int)0);
             //.net guarantees writes not to be reordered - but just for sure lets explicitly issue mem barrier
             Thread.MemoryBarrier();
         }
 
-        public int Capacity { get; }
-        public int Size
-        {
-            get => _memoryAccessor.ReadInt32(_SIZE_OFFSET);
-            set => _memoryAccessor.Write(_SIZE_OFFSET, value >= Capacity ? Capacity : value);
-        }
+        public long OldestTimestampTicks =>
+            ringBuffermemoryAccessor.ReadInt64(CurrentIndex * sizeof(long));
+
 
         private int GetWrapIndex(int i)
         {
@@ -100,30 +133,6 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             if (i >= Capacity)
                 return 0;
             return i;
-        }
-
-        public long SpanTicks { get; }
-
-        public long OldestTimestampTicks =>
-            _ringBuffermemoryAccessor.ReadInt64(CurrentIndex * sizeof(long));
-
-        private int CurrentIndex
-        {
-            get => _memoryAccessor.ReadInt32(_CURRENT_IDX_OFFSET);
-            set => _memoryAccessor.Write(_CURRENT_IDX_OFFSET, GetWrapIndex(value));
-        }
-
-        public long CurrentTimestampTicks
-        {
-            get => _ringBuffermemoryAccessor.ReadInt64(GetWrapIndex(CurrentIndex - 1) * sizeof(long));
-
-            set
-            {
-                _ringBuffermemoryAccessor.Write(CurrentIndex * sizeof(long), value);
-                //properties handle wrapping appropriately
-                Size++;
-                CurrentIndex++;
-            }
         }
     }
 }
