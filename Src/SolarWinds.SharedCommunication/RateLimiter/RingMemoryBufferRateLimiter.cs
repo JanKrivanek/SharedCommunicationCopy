@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SolarWinds.SharedCommunication.Contracts.RateLimiter;
+using SolarWinds.SharedCommunication.Contracts.Utils;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SolarWinds.SharedCommunication.Contracts.RateLimiter;
-using SolarWinds.SharedCommunication.Contracts.Utils;
 
 namespace SolarWinds.SharedCommunication.RateLimiter
 {
@@ -66,9 +66,9 @@ namespace SolarWinds.SharedCommunication.RateLimiter
             return true;
         }
 
-        private void EnterSynchronization()
+        private bool EnterSynchronization(TimeSpan maxAcceptableWaitingTime)
         {
-            SpinWait.SpinUntil(rateLimiterDataAccessor.TryEnterSynchronizedRegion);
+            return SpinWait.SpinUntil(rateLimiterDataAccessor.TryEnterSynchronizedRegion, maxAcceptableWaitingTime);
         }
 
         // Depending on version of OS and .NET framework, the granularity of timer and timer events can 1-15ms (15ms being the usual)
@@ -82,10 +82,15 @@ namespace SolarWinds.SharedCommunication.RateLimiter
         {
             DateTime utcNow;
             waitSpan = TimeSpan.Zero;
-            bool isAcceptable = true;
+            bool isAcceptable;
+
+            if (!EnterSynchronization(maxAcceptableWaitingTime))
+            {
+                return false;
+            }
+
             try
             {
-                EnterSynchronization();
                 utcNow = dateTime.UtcNow;
                 bool isFull = rateLimiterDataAccessor.Size == rateLimiterCapacity;
 
