@@ -33,4 +33,4 @@ group 3rdParty
     nuget FluentAssertions ~> 5.4.2
 	
     # Code coverage
-    nuget JetBrains.dotCover.CommandLineTools ~> 2019.2
+    nuget JetBrains.dotCover.CommandLineTools == 2020.3.2
